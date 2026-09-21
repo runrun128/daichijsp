@@ -1,170 +1,230 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>SURVEILLANCE SYSTEM</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
 
 <body>
 
-<!-- =========================
-     START
-========================= -->
+    <!-- =========================
+         START SCREEN
+    ========================== -->
 
-<div id="startScreen">
+    <div id="startScreen">
 
-    <div class="startBox">
+        <div class="startBox">
 
-        <div class="systemTitle">
-            SURVEILLANCE SYSTEM
-        </div>
+            <div class="systemTitle">
+                SURVEILLANCE SYSTEM
+            </div>
 
-        <div class="warning">
-            監視システム
-        </div>
+            <div class="warning">
+                監視システム
+            </div>
 
-        <button id="startButton">
-            START
-        </button>
+            <button id="startButton">
+                START
+            </button>
 
-        <div class="smallText">
-            SYSTEM READY
+            <div class="smallText">
+                SYSTEM READY
+            </div>
+
         </div>
 
     </div>
 
-</div>
+
+    <!-- =========================
+         GAME SCREEN
+    ========================== -->
+
+    <main id="gameScreen">
+
+        <!-- HEADER -->
+
+        <header>
+
+            <div class="headerLeft">
+
+                <span class="rec">
+                    ● REC
+                </span>
+
+                <span id="cameraName">
+                    CAM 1
+                </span>
+
+            </div>
 
 
-<!-- =========================
-     GAME
-========================= -->
+            <div
+                id="gameTime"
+                class="gameTime"
+            >
+                00:00
+            </div>
 
-<main id="gameScreen">
 
-    <header>
+            <div class="falseReportBox">
 
-        <div>
-            <span class="rec">● REC</span>
+                FALSE REPORTS
 
-            <span id="cameraName">
+                <span id="falseReports">
+                    0/5
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- CAMERA -->
+
+        <section class="cameraArea">
+
+            <img
+                id="cameraImage"
+                src="images/normal/cam1.jpg"
+                alt="監視カメラ"
+            >
+
+
+            <div class="scanlines"></div>
+
+
+            <div class="cameraLabel">
+
+                CAMERA
+
+                <span id="cameraNumber">
+                    01
+                </span>
+
+            </div>
+
+
+            <div
+                id="nightIndicator"
+                class="hidden"
+            >
+                NIGHT VISION
+            </div>
+
+        </section>
+
+
+        <!-- STATUS -->
+
+        <div id="statusMessage">
+            監視を開始してください
+        </div>
+
+
+        <!-- CAMERA BUTTONS -->
+
+        <nav id="cameraButtons">
+
+            <button
+                class="camButton active"
+                data-camera="1"
+            >
                 CAM 1
+            </button>
+
+            <button
+                class="camButton"
+                data-camera="2"
+            >
+                CAM 2
+            </button>
+
+            <button
+                class="camButton"
+                data-camera="3"
+            >
+                CAM 3
+            </button>
+
+            <button
+                class="camButton"
+                data-camera="4"
+            >
+                CAM 4
+            </button>
+
+            <button
+                class="camButton"
+                data-camera="5"
+            >
+                CAM 5
+            </button>
+
+            <button
+                class="camButton"
+                data-camera="6"
+            >
+                CAM 6
+            </button>
+
+            <button
+                class="camButton"
+                data-camera="7"
+            >
+                CAM 7
+            </button>
+
+        </nav>
+
+
+        <!-- KEYBOARD GUIDE -->
+
+        <div class="controls">
+
+            <span>
+                A / ←　前のカメラ
             </span>
-        </div>
 
-        <div id="clock">
-            00:00:00
-        </div>
+            <span>
+                D / →　次のカメラ
+            </span>
 
-    </header>
-
-
-    <!-- CAMERA -->
-
-    <section class="cameraArea">
-
-        <img
-            id="cameraImage"
-            src="images/normal/cam1.jpg"
-        >
-
-        <div class="scanlines"></div>
-
-        <div class="cameraLabel">
-
-            CAMERA
-            <span id="cameraNumber">
-                01
+            <span>
+                W　暗視モード
             </span>
 
         </div>
 
-        <div
-            id="nightIndicator"
-            class="hidden"
-        >
-            NIGHT VISION
-        </div>
 
-    </section>
+        <!-- REPORT BUTTON -->
 
-
-    <!-- CAMERA CONTROL -->
-
-    <nav id="cameraButtons">
-
-        <button class="camButton active"
-                data-camera="1">
-            CAM 1
+        <button id="reportButton">
+            長押しで異常を報告
         </button>
 
-        <button class="camButton"
-                data-camera="2">
-            CAM 2
-        </button>
 
-        <button class="camButton"
-                data-camera="3">
-            CAM 3
-        </button>
+        <!-- MESSAGE -->
 
-        <button class="camButton"
-                data-camera="4">
-            CAM 4
-        </button>
+        <div id="message"></div>
 
-        <button class="camButton"
-                data-camera="5">
-            CAM 5
-        </button>
-
-        <button class="camButton"
-                data-camera="6">
-            CAM 6
-        </button>
-
-        <button class="camButton"
-                data-camera="7">
-            CAM 7
-        </button>
-
-    </nav>
+    </main>
 
 
-    <div class="controls">
-
-        <span>
-            A / ←　前のカメラ
-        </span>
-
-        <span>
-            D / →　次のカメラ
-        </span>
-
-        <span>
-            W　暗視モード
-        </span>
-
-    </div>
-
-
-    <!-- REPORT -->
-
-    <button id="reportButton">
-        長押しで異常を報告
-    </button>
-
-
-    <div id="message"></div>
-
-</main>
-
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
+
 </html>

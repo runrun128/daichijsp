@@ -2,6 +2,7 @@
     box-sizing: border-box;
 }
 
+
 html,
 body {
 
@@ -18,6 +19,7 @@ body {
 
 }
 
+
 body {
 
     overflow: hidden;
@@ -25,9 +27,9 @@ body {
 }
 
 
-/* =========================
-   START
-========================= */
+/* ========================================
+   START SCREEN
+======================================== */
 
 #startScreen {
 
@@ -44,6 +46,7 @@ body {
 
 }
 
+
 .startBox {
 
     width: 420px;
@@ -51,6 +54,7 @@ body {
     text-align: center;
 
 }
+
 
 .systemTitle {
 
@@ -64,6 +68,7 @@ body {
 
 }
 
+
 .warning {
 
     font-size: 30px;
@@ -73,6 +78,7 @@ body {
     margin-bottom: 60px;
 
 }
+
 
 #startButton {
 
@@ -96,6 +102,7 @@ body {
 
 }
 
+
 #startButton:hover {
 
     background: #222;
@@ -105,9 +112,20 @@ body {
 }
 
 
-/* =========================
+.smallText {
+
+    margin-top: 25px;
+
+    color: #444;
+
+    font-size: 11px;
+
+}
+
+
+/* ========================================
    GAME
-========================= */
+======================================== */
 
 #gameScreen {
 
@@ -121,7 +139,10 @@ body {
 
 }
 
+
 header {
+
+    position: relative;
 
     height: 45px;
 
@@ -135,6 +156,16 @@ header {
 
 }
 
+
+.headerLeft {
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+
 .rec {
 
     margin-right: 20px;
@@ -144,9 +175,42 @@ header {
 }
 
 
-/* =========================
+.gameTime {
+
+    position: absolute;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    font-size: 24px;
+
+    color: #aaa;
+
+    letter-spacing: 3px;
+
+}
+
+
+.falseReportBox {
+
+    color: #666;
+
+}
+
+
+#falseReports {
+
+    margin-left: 10px;
+
+    color: #aaa;
+
+}
+
+
+/* ========================================
    CAMERA
-========================= */
+======================================== */
 
 .cameraArea {
 
@@ -170,6 +234,7 @@ header {
 
 }
 
+
 #cameraImage {
 
     width: 100%;
@@ -183,7 +248,9 @@ header {
 }
 
 
-/* scanline */
+/* ========================================
+   SCANLINES
+======================================== */
 
 .scanlines {
 
@@ -212,7 +279,9 @@ header {
 }
 
 
-/* camera label */
+/* ========================================
+   CAMERA LABEL
+======================================== */
 
 .cameraLabel {
 
@@ -233,7 +302,9 @@ header {
 }
 
 
-/* night indicator */
+/* ========================================
+   NIGHT VISION
+======================================== */
 
 #nightIndicator {
 
@@ -255,6 +326,7 @@ header {
 
 }
 
+
 .hidden {
 
     display: none;
@@ -262,9 +334,35 @@ header {
 }
 
 
-/* =========================
+/* ========================================
+   STATUS
+======================================== */
+
+#statusMessage {
+
+    text-align: center;
+
+    height: 25px;
+
+    margin-top: 5px;
+
+    font-size: 12px;
+
+    color: #555;
+
+}
+
+
+#statusMessage.warning {
+
+    color: #aaa;
+
+}
+
+
+/* ========================================
    CAMERA BUTTONS
-========================= */
+======================================== */
 
 #cameraButtons {
 
@@ -279,6 +377,7 @@ header {
     justify-content: center;
 
 }
+
 
 .camButton {
 
@@ -298,6 +397,7 @@ header {
 
 }
 
+
 .camButton:hover {
 
     border-color: #777;
@@ -305,6 +405,7 @@ header {
     color: #ddd;
 
 }
+
 
 .camButton.active {
 
@@ -315,9 +416,9 @@ header {
 }
 
 
-/* =========================
+/* ========================================
    CONTROLS
-========================= */
+======================================== */
 
 .controls {
 
@@ -336,9 +437,9 @@ header {
 }
 
 
-/* =========================
+/* ========================================
    REPORT
-========================= */
+======================================== */
 
 #reportButton {
 
@@ -364,6 +465,7 @@ header {
 
 }
 
+
 #reportButton:hover {
 
     border-color: #888;
@@ -371,6 +473,7 @@ header {
     color: #ddd;
 
 }
+
 
 #reportButton.holding {
 
@@ -383,9 +486,9 @@ header {
 }
 
 
-/* =========================
+/* ========================================
    MESSAGE
-========================= */
+======================================== */
 
 #message {
 
