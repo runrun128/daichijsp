@@ -1,0 +1,404 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+
+    margin: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: #050505;
+
+    color: #ddd;
+
+    font-family: monospace;
+
+}
+
+body {
+
+    overflow: hidden;
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+#startScreen {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background: #050505;
+
+}
+
+.startBox {
+
+    width: 420px;
+
+    text-align: center;
+
+}
+
+.systemTitle {
+
+    font-size: 14px;
+
+    letter-spacing: 5px;
+
+    color: #777;
+
+    margin-bottom: 25px;
+
+}
+
+.warning {
+
+    font-size: 30px;
+
+    letter-spacing: 8px;
+
+    margin-bottom: 60px;
+
+}
+
+#startButton {
+
+    width: 260px;
+
+    height: 65px;
+
+    background: #111;
+
+    border: 1px solid #777;
+
+    color: #ddd;
+
+    font-family: monospace;
+
+    font-size: 20px;
+
+    letter-spacing: 5px;
+
+    cursor: pointer;
+
+}
+
+#startButton:hover {
+
+    background: #222;
+
+    border-color: white;
+
+}
+
+
+/* =========================
+   GAME
+========================= */
+
+#gameScreen {
+
+    display: none;
+
+    width: 100%;
+
+    height: 100vh;
+
+    padding: 20px;
+
+}
+
+header {
+
+    height: 45px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    color: #777;
+
+}
+
+.rec {
+
+    margin-right: 20px;
+
+    color: #777;
+
+}
+
+
+/* =========================
+   CAMERA
+========================= */
+
+.cameraArea {
+
+    position: relative;
+
+    width: 100%;
+
+    height: calc(100vh - 250px);
+
+    background: #111;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    border: 1px solid #333;
+
+}
+
+#cameraImage {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    user-select: none;
+
+}
+
+
+/* scanline */
+
+.scanlines {
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    background:
+
+        repeating-linear-gradient(
+
+            to bottom,
+
+            rgba(255,255,255,0.025) 0px,
+
+            rgba(255,255,255,0.025) 1px,
+
+            transparent 1px,
+
+            transparent 4px
+
+        );
+
+}
+
+
+/* camera label */
+
+.cameraLabel {
+
+    position: absolute;
+
+    bottom: 15px;
+
+    left: 15px;
+
+    font-size: 13px;
+
+    color: rgba(255,255,255,0.5);
+
+    background: rgba(0,0,0,0.5);
+
+    padding: 6px 10px;
+
+}
+
+
+/* night indicator */
+
+#nightIndicator {
+
+    position: absolute;
+
+    top: 15px;
+
+    right: 15px;
+
+    padding: 7px 12px;
+
+    background: rgba(0,0,0,0.6);
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+
+}
+
+.hidden {
+
+    display: none;
+
+}
+
+
+/* =========================
+   CAMERA BUTTONS
+========================= */
+
+#cameraButtons {
+
+    height: 55px;
+
+    display: flex;
+
+    gap: 8px;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+.camButton {
+
+    width: 80px;
+
+    height: 35px;
+
+    background: #111;
+
+    border: 1px solid #333;
+
+    color: #777;
+
+    font-family: monospace;
+
+    cursor: pointer;
+
+}
+
+.camButton:hover {
+
+    border-color: #777;
+
+    color: #ddd;
+
+}
+
+.camButton.active {
+
+    border-color: #aaa;
+
+    color: white;
+
+}
+
+
+/* =========================
+   CONTROLS
+========================= */
+
+.controls {
+
+    height: 30px;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 35px;
+
+    color: #555;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================
+   REPORT
+========================= */
+
+#reportButton {
+
+    display: block;
+
+    width: 300px;
+
+    height: 45px;
+
+    margin: 5px auto 0;
+
+    background: #111;
+
+    border: 1px solid #444;
+
+    color: #777;
+
+    font-family: monospace;
+
+    cursor: pointer;
+
+    user-select: none;
+
+}
+
+#reportButton:hover {
+
+    border-color: #888;
+
+    color: #ddd;
+
+}
+
+#reportButton.holding {
+
+    background: #222;
+
+    border-color: white;
+
+    color: white;
+
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+#message {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 20px;
+
+    transform: translateX(-50%);
+
+    font-size: 14px;
+
+    pointer-events: none;
+
+}
