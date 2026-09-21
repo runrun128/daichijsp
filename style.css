@@ -2,28 +2,38 @@
     box-sizing: border-box;
 }
 
-
 html,
 body {
-
     margin: 0;
-
+    padding: 0;
     width: 100%;
     height: 100%;
 
     background: #050505;
-
     color: #ddd;
 
-    font-family: monospace;
+    font-family: Arial, Helvetica, sans-serif;
 
+    overflow: hidden;
 }
 
 
-body {
+/* ========================================
+   共通 SCREEN
+======================================== */
 
-    overflow: hidden;
+.screen {
+    position: fixed;
+    inset: 0;
 
+    width: 100vw;
+    height: 100vh;
+
+    display: none;
+}
+
+.screen.active {
+    display: flex;
 }
 
 
@@ -32,179 +42,201 @@ body {
 ======================================== */
 
 #startScreen {
-
-    position: fixed;
-
-    inset: 0;
-
-    display: flex;
-
-    justify-content: center;
     align-items: center;
-
-    background: #050505;
-
-}
-
-
-.startBox {
-
-    width: 420px;
+    justify-content: center;
 
     text-align: center;
-
 }
 
-
-.systemTitle {
-
-    font-size: 14px;
-
-    letter-spacing: 5px;
-
-    color: #777;
-
-    margin-bottom: 25px;
-
+.start-content {
+    width: 90%;
+    max-width: 600px;
 }
 
+.logo {
+    font-size: clamp(60px, 10vw, 110px);
 
-.warning {
-
-    font-size: 30px;
-
-    letter-spacing: 8px;
-
-    margin-bottom: 60px;
-
-}
-
-
-#startButton {
-
-    width: 260px;
-
-    height: 65px;
-
-    background: #111;
-
-    border: 1px solid #777;
+    font-weight: 900;
+    letter-spacing: 12px;
 
     color: #ddd;
-
-    font-family: monospace;
-
-    font-size: 20px;
-
-    letter-spacing: 5px;
-
-    cursor: pointer;
-
 }
 
+.subtitle {
+    margin-top: 5px;
 
-#startButton:hover {
+    font-size: 12px;
+    letter-spacing: 4px;
 
-    background: #222;
-
-    border-color: white;
-
+    color: #777;
 }
 
-
-.smallText {
-
-    margin-top: 25px;
-
-    color: #444;
+.warning {
+    margin-top: 55px;
 
     font-size: 11px;
+    letter-spacing: 3px;
 
+    color: #666;
 }
 
 
 /* ========================================
-   GAME
+   BUTTON
+======================================== */
+
+button {
+    border: 1px solid #555;
+
+    background: #111;
+
+    color: #ddd;
+
+    height: 44px;
+
+    padding: 0 25px;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        transform 0.1s;
+}
+
+button:hover {
+    background: #222;
+    border-color: #aaa;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+#startButton {
+    margin-top: 40px;
+
+    width: 180px;
+}
+
+
+/* ========================================
+   GAME SCREEN
 ======================================== */
 
 #gameScreen {
-
     display: none;
+
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: #050505;
+}
+
+#gameScreen.active {
+    display: flex;
+}
+
+
+/* ========================================
+   HEADER
+======================================== */
+
+header {
+    position: relative;
+
+    flex: 0 0 60px;
 
     width: 100%;
 
-    height: 100vh;
-
-    padding: 20px;
-
-}
-
-
-header {
-
-    position: relative;
-
-    height: 45px;
-
     display: flex;
 
+    align-items: center;
     justify-content: space-between;
 
-    align-items: center;
+    padding: 0 24px;
 
-    color: #777;
+    border-bottom: 1px solid #222;
 
+    background: #090909;
+
+    font-family: monospace;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
 }
 
-
-.headerLeft {
-
+.header-left {
     display: flex;
 
     align-items: center;
 
+    gap: 24px;
 }
-
 
 .rec {
+    color: #aaa;
 
-    margin-right: 20px;
-
-    color: #777;
-
+    white-space: nowrap;
 }
 
+.header-right {
+    color: #666;
 
-.gameTime {
+    white-space: nowrap;
+}
 
+#falseReports {
+    color: #ddd;
+
+    margin-left: 8px;
+}
+
+.game-time {
     position: absolute;
 
     left: 50%;
+    top: 50%;
 
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
 
-    font-size: 24px;
-
-    color: #aaa;
+    font-size: 20px;
 
     letter-spacing: 3px;
 
+    color: #ddd;
+
+    white-space: nowrap;
 }
 
 
-.falseReportBox {
+/* ========================================
+   MAIN GAME AREA
+======================================== */
 
-    color: #666;
+main {
+    flex: 1;
 
-}
+    width: 100%;
 
+    display: flex;
 
-#falseReports {
+    flex-direction: column;
 
-    margin-left: 10px;
+    align-items: center;
 
-    color: #aaa;
+    justify-content: flex-start;
 
+    padding-top: 30px;
+
+    min-height: 0;
 }
 
 
@@ -212,39 +244,107 @@ header {
    CAMERA
 ======================================== */
 
-.cameraArea {
-
+#cameraContainer {
     position: relative;
 
-    width: 100%;
+    width: min(90vw, 1100px);
 
-    height: calc(100vh - 250px);
+    aspect-ratio: 16 / 9;
 
-    background: #111;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
+    background: #000;
 
     overflow: hidden;
 
     border: 1px solid #333;
 
+    flex-shrink: 1;
+}
+
+#cameraImage,
+#dangerVideo {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+#cameraImage {
+    display: block;
+
+    z-index: 1;
+}
+
+#dangerVideo {
+    display: none;
+
+    z-index: 5;
+
+    background: #000;
 }
 
 
-#cameraImage {
+/* ========================================
+   CAMERA OVERLAY
+======================================== */
 
-    width: 100%;
+.camera-overlay {
+    position: absolute;
 
-    height: 100%;
+    inset: 0;
 
-    object-fit: contain;
+    z-index: 10;
 
-    user-select: none;
+    pointer-events: none;
+}
 
+.camera-label {
+    position: absolute;
+
+    top: 15px;
+    left: 18px;
+
+    padding: 5px 8px;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    color: #ddd;
+
+    font-family: monospace;
+
+    font-size: 13px;
+
+    letter-spacing: 1px;
+}
+
+.night-indicator {
+    position: absolute;
+
+    top: 15px;
+    right: 18px;
+
+    padding: 5px 8px;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    color: #777;
+
+    font-family: monospace;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    display: none;
+}
+
+.night-indicator.active {
+    display: block;
+
+    color: #aaa;
 }
 
 
@@ -253,84 +353,22 @@ header {
 ======================================== */
 
 .scanlines {
-
     position: absolute;
 
     inset: 0;
 
+    z-index: 20;
+
     pointer-events: none;
 
     background:
-
         repeating-linear-gradient(
-
             to bottom,
-
-            rgba(255,255,255,0.025) 0px,
-
-            rgba(255,255,255,0.025) 1px,
-
+            rgba(255, 255, 255, 0.025) 0px,
+            rgba(255, 255, 255, 0.025) 1px,
             transparent 1px,
-
             transparent 4px
-
         );
-
-}
-
-
-/* ========================================
-   CAMERA LABEL
-======================================== */
-
-.cameraLabel {
-
-    position: absolute;
-
-    bottom: 15px;
-
-    left: 15px;
-
-    font-size: 13px;
-
-    color: rgba(255,255,255,0.5);
-
-    background: rgba(0,0,0,0.5);
-
-    padding: 6px 10px;
-
-}
-
-
-/* ========================================
-   NIGHT VISION
-======================================== */
-
-#nightIndicator {
-
-    position: absolute;
-
-    top: 15px;
-
-    right: 15px;
-
-    padding: 7px 12px;
-
-    background: rgba(0,0,0,0.6);
-
-    color: #aaa;
-
-    font-size: 12px;
-
-    letter-spacing: 2px;
-
-}
-
-
-.hidden {
-
-    display: none;
-
 }
 
 
@@ -338,81 +376,26 @@ header {
    STATUS
 ======================================== */
 
-#statusMessage {
+#status {
+    width: min(90vw, 1100px);
 
-    text-align: center;
-
-    height: 25px;
-
-    margin-top: 5px;
-
-    font-size: 12px;
-
-    color: #555;
-
-}
-
-
-#statusMessage.warning {
-
-    color: #aaa;
-
-}
-
-
-/* ========================================
-   CAMERA BUTTONS
-======================================== */
-
-#cameraButtons {
-
-    height: 55px;
+    height: 38px;
 
     display: flex;
 
-    gap: 8px;
-
     align-items: center;
 
-    justify-content: center;
-
-}
-
-
-.camButton {
-
-    width: 80px;
-
-    height: 35px;
-
-    background: #111;
-
-    border: 1px solid #333;
+    padding: 0 2px;
 
     color: #777;
 
     font-family: monospace;
 
-    cursor: pointer;
+    font-size: 12px;
 
-}
+    letter-spacing: 1px;
 
-
-.camButton:hover {
-
-    border-color: #777;
-
-    color: #ddd;
-
-}
-
-
-.camButton.active {
-
-    border-color: #aaa;
-
-    color: white;
-
+    flex-shrink: 0;
 }
 
 
@@ -421,87 +404,284 @@ header {
 ======================================== */
 
 .controls {
+    width: min(90vw, 1100px);
 
-    height: 30px;
+    height: 55px;
 
     display: flex;
 
+    align-items: center;
+
     justify-content: center;
 
-    gap: 35px;
+    gap: 18px;
 
-    color: #555;
+    flex-shrink: 0;
+}
 
-    font-size: 11px;
+.controls button {
+    min-width: 100px;
+}
 
+.report-button {
+    min-width: 180px !important;
+}
+
+.report-button.holding {
+    background: #333;
+
+    border-color: #aaa;
 }
 
 
 /* ========================================
-   REPORT
+   HELP
 ======================================== */
 
-#reportButton {
+.help {
+    width: min(90vw, 1100px);
 
-    display: block;
+    height: 35px;
 
-    width: 300px;
+    display: flex;
 
-    height: 45px;
+    align-items: center;
 
-    margin: 5px auto 0;
+    justify-content: center;
 
-    background: #111;
-
-    border: 1px solid #444;
-
-    color: #777;
+    color: #444;
 
     font-family: monospace;
 
-    cursor: pointer;
+    font-size: 10px;
 
-    user-select: none;
+    letter-spacing: 1px;
 
+    flex-shrink: 0;
 }
 
 
-#reportButton:hover {
+/* ========================================
+   REPORT SCREEN
+======================================== */
 
-    border-color: #888;
+#reportScreen {
+    position: fixed;
 
-    color: #ddd;
+    inset: 0;
 
+    z-index: 1000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #000;
+
+    color: #fff;
+
+    text-align: center;
+}
+
+#reportScreen.active {
+    display: flex;
+}
+
+.report-message {
+    font-family: monospace;
+
+    font-size: 20px;
+
+    letter-spacing: 3px;
+
+    animation: reportFade 0.4s ease;
+}
+
+@keyframes reportFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 
-#reportButton.holding {
+/* ========================================
+   GAME OVER / CLEAR
+======================================== */
 
-    background: #222;
+#gameOverScreen,
+#clearScreen {
+    align-items: center;
 
-    border-color: white;
+    justify-content: center;
 
-    color: white;
+    text-align: center;
+}
+
+.result-content {
+    text-align: center;
+}
+
+.result-title {
+    font-size: clamp(50px, 8vw, 90px);
+
+    font-weight: 900;
+
+    letter-spacing: 8px;
+}
+
+.result-subtitle {
+    margin-top: 15px;
+
+    color: #666;
+
+    font-family: monospace;
+
+    font-size: 12px;
+
+    letter-spacing: 4px;
+}
+
+.result-content button {
+    margin-top: 50px;
+}
+
+
+/* ========================================
+   DANGER MODE
+======================================== */
+
+.danger-mode #cameraContainer {
+    animation: dangerShake 0.12s infinite;
+}
+
+@keyframes dangerShake {
+
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(-3px, 2px);
+    }
+
+    50% {
+        transform: translate(3px, -2px);
+    }
+
+    75% {
+        transform: translate(-2px, -3px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
 
 }
 
 
 /* ========================================
-   MESSAGE
+   SMALL SCREEN
 ======================================== */
 
-#message {
+@media (max-width: 700px) {
 
-    position: fixed;
+    header {
+        flex-basis: 52px;
 
-    left: 50%;
+        padding: 0 10px;
 
-    bottom: 20px;
+        font-size: 9px;
+    }
 
-    transform: translateX(-50%);
+    .header-left {
+        gap: 10px;
+    }
 
-    font-size: 14px;
+    .game-time {
+        font-size: 15px;
+    }
 
-    pointer-events: none;
+    main {
+        padding-top: 15px;
+    }
+
+    #cameraContainer {
+        width: 94vw;
+    }
+
+    #status {
+        width: 94vw;
+    }
+
+    .controls {
+        width: 94vw;
+
+        gap: 8px;
+    }
+
+    .controls button {
+        min-width: 75px;
+
+        padding: 0 10px;
+    }
+
+    .report-button {
+        min-width: 130px !important;
+    }
+
+    .help {
+        width: 94vw;
+
+        font-size: 8px;
+    }
+
+    .camera-label {
+        top: 10px;
+        left: 10px;
+    }
+
+    .night-indicator {
+        top: 10px;
+        right: 10px;
+    }
+
+}
+
+
+/* ========================================
+   VERY SMALL HEIGHT
+======================================== */
+
+@media (max-height: 650px) {
+
+    main {
+        padding-top: 10px;
+    }
+
+    header {
+        flex-basis: 50px;
+    }
+
+    #cameraContainer {
+        width: min(85vw, 800px);
+    }
+
+    #status {
+        height: 30px;
+    }
+
+    .controls {
+        height: 45px;
+    }
+
+    .help {
+        height: 25px;
+    }
 
 }

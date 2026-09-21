@@ -1,0 +1,82 @@
+jsp-parody/
+│
+├── index.html
+├── style.css
+├── script.js
+│
+├── images/
+│   ├── normal/
+│   │   ├── cam1.jpg
+│   │   ├── cam2.jpg
+│   │   ├── cam3.jpg
+│   │   ├── cam4.jpg
+│   │   ├── cam5.jpg
+│   │   ├── cam6.jpg
+│   │   └── cam7.jpg
+│   │
+│   └── night/
+│       ├── cam1.jpg
+│       ├── cam2.jpg
+│       ├── cam3.jpg
+│       ├── cam4.jpg
+│       ├── cam5.jpg
+│       ├── cam6.jpg
+│       └── cam7.jpg
+│
+├── anomaly/
+│   └── normal/
+│       ├── cam1/
+│       │   ├── 01.jpg
+│       │   └── 02.jpg
+│       │
+│       ├── cam2/
+│       │   └── 01.jpg
+│       │
+│       ├── cam3/
+│       │   └── 01.jpg
+│       │
+│       ├── cam4/
+│       │   └── 01.jpg
+│       │
+│       ├── cam5/
+│       │   └── 01.jpg
+│       │
+│       ├── cam6/
+│       │   └── 01.jpg
+│       │
+│       └── cam7/
+│           └── 01.jpg
+│
+├── danger/
+│   ├── cam1/
+│   │   └── 01.mp4
+│   ├── cam2/
+│   │   └── 01.mp4
+│   ├── cam3/
+│   │   └── 01.mp4
+│   ├── cam4/
+│   │   └── 01.mp4
+│   ├── cam5/
+│   │   └── 01.mp4
+│   ├── cam6/
+│   │   └── 01.mp4
+│   └── cam7/
+│       └── 01.mp4
+│
+└── sounds/
+    ├── camera.mp3
+    ├── night_on.mp3
+    ├── night_off.mp3
+    ├── hold_start.mp3
+    ├── hold_loop.mp3
+    ├── report_success.mp3
+    ├── report_failure.mp3
+    ├── heartbeat.mp3
+    │
+    ├── env_cam1.mp3
+    ├── env_cam2.mp3
+    ├── env_cam3.mp3
+    ├── env_cam4.mp3
+    ├── env_cam5.mp3
+    ├── env_cam6.mp3
+    └── env_cam7.mp3
