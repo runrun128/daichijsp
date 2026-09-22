@@ -1,117 +1,77 @@
-/* =========================================================
-   JSP PARODY
-   Surveillance Horror Game
-========================================================= */
-
-
-/* =========================================================
-   GAME SETTINGS
-========================================================= */
-
-const CAMERA_COUNT = 7;
-
-const GAME_END_MINUTES = 300;
-
-// 10分 = 600秒
-const REAL_GAME_LENGTH = 10 * 60 * 1000;
-
-// 300 game minutesを10分で進める
-// 1 game minute = 2秒
-const GAME_MINUTE_MS =
-    REAL_GAME_LENGTH / GAME_END_MINUTES;
-
-// 最初の30分間は異変なし
-const NO_ANOMALY_UNTIL = 30;
-
-// 誤報5回でゲームオーバー
-const MAX_FALSE_REPORTS = 5;
-
-// 報告長押し時間
-const REPORT_HOLD_TIME = 1200;
-
-// 報告演出
-const REPORT_SCREEN_TIME = 2000;
-
-// 危険異変の制限時間
-const DANGER_TIME_LIMIT = 10000;
-
-
-/* =========================================================
-   GAME STATE
-========================================================= */
+const cameras = 7;
 
 let currentCamera = 1;
-
 let nightVision = false;
+let gameStarted = false;
 
 let gameMinutes = 0;
+let gameTimer = null;
 
 let falseReports = 0;
 
-let gameRunning = false;
+let anomalyActive = false;
+let currentAnomaly = null;
 
-let gameEnded = false;
+let dangerActive = false;
+let dangerCamera = null;
+let dangerFile = null;
+let dangerTimer = null;
+let dangerVideoPlaying = false;
 
+let holdTimer = null;
+let holdLoopStarted = false;
 
-/* =========================================================
-   ANOMALY STATE
-========================================================= */
-
-// 通常異変
-let normalAnomalyActive = false;
-
-let normalAnomalyCamera = null;
-
-let normalAnomalyFile = null;
-
-let normalAnomalyMode = null;
-
-let normalAnomalyTimer = null;
+let environmentAudio = null;
+let heartbeatAudio = null;
 
 
-// 危険異変
-let dangerAnomalyActive = false;
+// =========================
+// 出現済み異変
+// =========================
 
-let dangerAnomalyCamera = null;
-
-let dangerAnomalyFile = null;
-
-let dangerAnomalyTimer = null;
-
-let dangerTimeoutTimer = null;
+const usedNormalAnomalies = new Set();
+const usedPairedAnomalies = new Set();
+const usedDangerAnomalies = new Set();
 
 
-/* =========================================================
-   REPORT STATE
-========================================================= */
+// =========================
+// DOM
+// =========================
 
-let reportHolding = false;
+const startScreen = document.getElementById("startScreen");
+const gameScreen = document.getElementById("gameScreen");
 
-let reportTimer = null;
+const startButton = document.getElementById("startButton");
+const retryButton = document.getElementById("retryButton");
+const clearButton = document.getElementById("clearButton");
 
-let holdLoopAudio = null;
+const cameraImage = document.getElementById("cameraImage");
+const dangerVideo = document.getElementById("dangerVideo");
 
+const cameraName = document.getElementById("cameraName");
+const cameraNumber = document.getElementById("cameraNumber");
 
-/* =========================================================
-   OTHER TIMERS
-========================================================= */
+const gameTime = document.getElementById("gameTime");
+const falseReportsDisplay =
+    document.getElementById("falseReports");
 
-let gameClockTimer = null;
+const nightIndicator =
+    document.getElementById("nightIndicator");
 
-let nextAnomalyTimer = null;
+const status =
+    document.getElementById("status");
 
-let reportScreenTimer = null;
+const reportButton =
+    document.getElementById("reportButton");
 
+const previousButton =
+    document.getElementById("prevCamera");
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+const nextButton =
+    document.getElementById("nextCamera");
 
-const startScreen =
-    document.getElementById("startScreen");
-
-const gameScreen =
-    document.getElementById("gameScreen");
+const reportScreen =
+    document.getElementById("reportScreen");
 
 const gameOverScreen =
     document.getElementById("gameOverScreen");
@@ -119,226 +79,133 @@ const gameOverScreen =
 const clearScreen =
     document.getElementById("clearScreen");
 
-const reportScreen =
-    document.getElementById("reportScreen");
 
-
-const startButton =
-    document.getElementById("startButton");
-
-const retryButton =
-    document.getElementById("retryButton");
-
-const clearButton =
-    document.getElementById("clearButton");
-
-
-const cameraImage =
-    document.getElementById("cameraImage");
-
-const dangerVideo =
-    document.getElementById("dangerVideo");
-
-
-const cameraName =
-    document.getElementById("cameraName");
-
-const cameraNumber =
-    document.getElementById("cameraNumber");
-
-const gameTime =
-    document.getElementById("gameTime");
-
-const falseReportsDisplay =
-    document.getElementById("falseReports");
-
-const status =
-    document.getElementById("status");
-
-const nightIndicator =
-    document.getElementById("nightIndicator");
-
-
-const prevCameraButton =
-    document.getElementById("prevCamera");
-
-const nextCameraButton =
-    document.getElementById("nextCamera");
-
-const reportButton =
-    document.getElementById("reportButton");
-
-
-/* =========================================================
-   SOUNDS
-========================================================= */
-
-const cameraSound =
-    new Audio("sounds/camera.mp3");
-
-const nightOnSound =
-    new Audio("sounds/night_on.mp3");
-
-const nightOffSound =
-    new Audio("sounds/night_off.mp3");
-
-const reportSuccessSound =
-    new Audio("sounds/report_success.mp3");
-
-const reportFailureSound =
-    new Audio("sounds/report_failure.mp3");
-
-const holdStartSound =
-    new Audio("sounds/hold_start.mp3");
-
-const heartbeatSound =
-    new Audio("sounds/heartbeat.mp3");
-
-
-// 長押しループ
-holdLoopAudio =
-    new Audio("sounds/hold_loop.mp3");
-
-holdLoopAudio.loop = true;
-
-
-// 環境音
-const environmentSounds = {
-
-    1: new Audio("sounds/env_cam1.mp3"),
-
-    2: new Audio("sounds/env_cam2.mp3"),
-
-    3: new Audio("sounds/env_cam3.mp3"),
-
-    4: new Audio("sounds/env_cam4.mp3"),
-
-    5: new Audio("sounds/env_cam5.mp3"),
-
-    6: new Audio("sounds/env_cam6.mp3"),
-
-    7: new Audio("sounds/env_cam7.mp3")
-
-};
-
-
-Object.values(environmentSounds).forEach(sound => {
-
-    sound.loop = true;
-
-    sound.volume = 0.5;
-
-});
-
-
-heartbeatSound.loop = true;
-
-heartbeatSound.volume = 0.8;
-
-
-/* =========================================================
-   ANOMALY DATA
-========================================================= */
-
-/*
-    通常異変
-
-    normal:
-        通常モードで出る画像
-
-    night:
-        ナイトビジョンで出る画像
-*/
-
+// =========================
+// 通常異変
+// =========================
 
 const normalAnomalies = {
 
     1: {
         normal: [
             "01.jpg",
-            "02.jpg"
+            "02.jpg",
+            "04.jpg",
+            "06.jpg"
         ],
 
         night: [
-            "01.jpg"
+            "03.jpg",
+            "05.jpg"
         ]
     },
-
 
     2: {
         normal: [
-            "01.jpg"
+            "01.jpg",
+            "02.jpg",
+            "03.jsp"
         ],
 
         night: [
-            "01.jpg",
-            "02.jpg"
+            "04.jpg"
         ]
     },
-
 
     3: {
-        normal: [],
-
-        night: [
-            "01.jpg"
-        ]
-    },
-
-
-    4: {
         normal: [
-            "01.jpg"
+            "02.jpg",
+            "03.jsp"
         ],
 
         night: []
     },
 
+    4: {
+        normal: [
+            "02.jpg",
+            "03.jpg",
+            "04.jpg"
+        ],
 
-    5: {
-        normal: [],
-
-        night: [
-            "01.jpg"
-        ]
+        night: []
     },
 
+    5: {
+        normal: [
+            "01.jpg",
+            "02.jpg",
+            "03.jsp"
+        ],
+
+        night: [
+            "04.jpg"
+        ]
+    },
 
     6: {
         normal: [
             "01.jpg"
         ],
 
-        night: []
+        night: [
+            "01.jpg"
+        ]
     },
 
-
     7: {
-        normal: [],
+        normal: [
+            "01.jpg"
+        ],
 
         night: [
             "01.jpg"
         ]
     }
-
 };
 
 
-/*
-    危険異変
+// =========================
+// セット異変
+// =========================
 
-    動画ファイルを置くだけ。
+const pairedAnomalies = {
 
-    例:
+    1: [
+        {
+            id: "pair01",
+            normal: "1pea2.jpg",
+            night: "1pea1.jpg"
+        }
+    ],
 
-    danger/cam1/01.mp4
+    3: [
+        {
+            id: "pair01",
+            normal: "01.jpg",
+            night: "04.jpg"
+        }
+    ],
 
-*/
+    4: [
+        {
+            id: "pair01",
+            normal: "05.jpg",
+            night: "01.jpg"
+        }
+    ]
+};
+
+
+// =========================
+// 危険異変
+// =========================
 
 const dangerAnomalies = {
 
     1: [
-        "01.mp4"
+        "01.mp4",
+        "02.mp4"
     ],
 
     2: [
@@ -364,214 +231,200 @@ const dangerAnomalies = {
     7: [
         "01.mp4"
     ]
-
 };
 
 
-/* =========================================================
-   UTILITY
-========================================================= */
+// =========================
+// サウンド
+// =========================
 
-function randomItem(array) {
+function playSound(file) {
 
-    if (!array || array.length === 0) {
-        return null;
+    const audio =
+        new Audio(`sounds/${file}`);
+
+    audio.play().catch(() => {});
+
+    return audio;
+}
+
+
+// =========================
+// 環境音
+// =========================
+
+function startEnvironmentSound() {
+
+    stopEnvironmentSound();
+
+    environmentAudio =
+        new Audio(
+            `sounds/env_cam${currentCamera}.mp3`
+        );
+
+    environmentAudio.loop = true;
+    environmentAudio.volume = 0.7;
+
+    environmentAudio.play().catch(() => {});
+}
+
+
+function stopEnvironmentSound() {
+
+    if (!environmentAudio) {
+        return;
     }
 
-    return array[
-        Math.floor(
-            Math.random() * array.length
-        )
-    ];
+    environmentAudio.pause();
+    environmentAudio.currentTime = 0;
+    environmentAudio = null;
 }
 
 
-function formatTime(minutes) {
+// =========================
+// カメラ表示
+// =========================
 
-    const minute =
-        Math.floor(minutes / 60);
+function updateCameraImage() {
 
-    const second =
-        minutes % 60;
+    const normalPath =
+        `images/normal/cam${currentCamera}.jpg`;
 
-    return (
-        String(minute).padStart(2, "0")
-        +
-        ":"
-        +
-        String(second).padStart(2, "0")
-    );
-}
+    const nightPath =
+        `images/night/cam${currentCamera}.jpg`;
 
-
-/* =========================================================
-   START GAME
-========================================================= */
-
-function startGame() {
-
-    // 全状態リセット
-    currentCamera = 1;
-
-    nightVision = false;
-
-    gameMinutes = 0;
-
-    falseReports = 0;
-
-    gameRunning = true;
-
-    gameEnded = false;
+    const currentMode =
+        nightVision
+            ? "night"
+            : "normal";
 
 
-    // 異変リセット
-    normalAnomalyActive = false;
-
-    normalAnomalyCamera = null;
-
-    normalAnomalyFile = null;
-
-    normalAnomalyMode = null;
+    cameraImage.src =
+        nightVision
+            ? nightPath
+            : normalPath;
 
 
-    dangerAnomalyActive = false;
+    cameraNumber.textContent =
+        String(currentCamera).padStart(2, "0");
 
-    dangerAnomalyCamera = null;
-
-    dangerAnomalyFile = null;
-
-
-    // タイマー停止
-    clearTimeout(nextAnomalyTimer);
-
-    clearTimeout(normalAnomalyTimer);
-
-    clearTimeout(dangerTimeoutTimer);
-
-    clearTimeout(reportScreenTimer);
-
-    clearInterval(gameClockTimer);
+    cameraName.textContent =
+        `CAM ${String(currentCamera).padStart(2, "0")}`;
 
 
-    // 危険状態解除
-    document.body.classList.remove("danger-mode");
+    nightIndicator.style.display =
+        nightVision
+            ? "block"
+            : "none";
 
 
-    // 動画停止
+    // =========================
+    // 危険異変
+    // =========================
+
+    if (
+        dangerActive &&
+        dangerCamera === currentCamera
+    ) {
+
+        cameraImage.style.display = "none";
+        dangerVideo.style.display = "block";
+
+        startDangerEffects();
+
+        return;
+    }
+
+
+    // =========================
+    // 通常異変
+    // =========================
+
+    if (
+        anomalyActive &&
+        currentAnomaly &&
+        currentAnomaly.type === "normal" &&
+        currentAnomaly.camera === currentCamera &&
+        currentAnomaly.mode === currentMode
+    ) {
+
+        cameraImage.src =
+            `anomaly/normal/cam${currentCamera}/${currentAnomaly.file}`;
+
+        cameraImage.style.display = "block";
+
+        dangerVideo.pause();
+        dangerVideo.style.display = "none";
+
+        stopDangerEffects();
+
+        status.textContent = "監視中";
+
+        return;
+    }
+
+
+    // =========================
+    // セット異変
+    // =========================
+
+    if (
+        anomalyActive &&
+        currentAnomaly &&
+        currentAnomaly.type === "paired" &&
+        currentAnomaly.camera === currentCamera
+    ) {
+
+        const file =
+            currentAnomaly[currentMode];
+
+        if (file) {
+
+            cameraImage.src =
+                `anomaly/normal/cam${currentCamera}/${file}`;
+
+            cameraImage.style.display = "block";
+
+            dangerVideo.pause();
+            dangerVideo.style.display = "none";
+
+            stopDangerEffects();
+
+            status.textContent = "監視中";
+
+            return;
+        }
+    }
+
+
+    // =========================
+    // 通常状態
+    // =========================
+
     dangerVideo.pause();
-
-    dangerVideo.removeAttribute("src");
-
-    dangerVideo.load();
-
     dangerVideo.style.display = "none";
 
+    cameraImage.style.display = "block";
 
-    // 表示更新
-    updateFalseReports();
+    stopDangerEffects();
 
-    updateGameTime();
-
-    updateCameraImage();
-
-    updateCameraUI();
-
-
-    // 画面
-    startScreen.classList.remove("active");
-
-    gameOverScreen.classList.remove("active");
-
-    clearScreen.classList.remove("active");
-
-    gameScreen.classList.add("active");
-
-
-    status.textContent =
-        "最初の30分間は異変が発生しません。";
-
-
-    // 環境音
-    changeEnvironmentSound(currentCamera);
-
-
-    // ゲーム時計開始
-    gameClockTimer = setInterval(
-        advanceGameTime,
-        GAME_MINUTE_MS
-    );
-
+    status.textContent = "監視中";
 }
 
 
-/* =========================================================
-   GAME CLOCK
-========================================================= */
-
-function advanceGameTime() {
-
-    if (!gameRunning || gameEnded) {
-        return;
-    }
-
-
-    gameMinutes++;
-
-    updateGameTime();
-
-
-    // 05:00
-    if (gameMinutes >= GAME_END_MINUTES) {
-
-        gameClear();
-
-        return;
-    }
-
-
-    // 00:30になった瞬間
-    if (gameMinutes === NO_ANOMALY_UNTIL) {
-
-        status.textContent =
-            "異変の監視を開始します。";
-
-
-        scheduleNextAnomaly();
-
-    }
-
-}
-
-
-/* =========================================================
-   GAME TIME DISPLAY
-========================================================= */
-
-function updateGameTime() {
-
-    gameTime.textContent =
-        formatTime(gameMinutes);
-
-}
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
+// =========================
+// カメラ切り替え
+// =========================
 
 function changeCamera(direction) {
 
-    if (!gameRunning || gameEnded) {
+    if (!gameStarted) {
         return;
     }
 
 
     // 危険異変中は移動禁止
-    if (dangerAnomalyActive) {
-
-        status.textContent =
-            "ERROR : CAMERA LOCKED";
-
+    if (dangerActive) {
         return;
     }
 
@@ -579,119 +432,45 @@ function changeCamera(direction) {
     currentCamera += direction;
 
 
-    if (currentCamera < 1) {
-        currentCamera = CAMERA_COUNT;
-    }
-
-
-    if (currentCamera > CAMERA_COUNT) {
+    if (currentCamera > cameras) {
         currentCamera = 1;
     }
 
 
-    cameraSound.currentTime = 0;
+    if (currentCamera < 1) {
+        currentCamera = cameras;
+    }
 
-    cameraSound.play().catch(() => {});
 
+    playSound("camera.mp3");
 
     updateCameraImage();
 
-    updateCameraUI();
-
-    changeEnvironmentSound(currentCamera);
-
-}
+    startEnvironmentSound();
 
 
-/* =========================================================
-   CAMERA IMAGE
-========================================================= */
-
-function updateCameraImage() {
-
-    /*
-        危険異変中は動画を優先
-    */
-
-    if (dangerAnomalyActive) {
-        return;
-    }
-
-
-    /*
-        通常異変が現在カメラにある場合
-    */
+    // =========================
+    // 00:30以降
+    // =========================
 
     if (
-        normalAnomalyActive &&
-        normalAnomalyCamera === currentCamera &&
-        normalAnomalyMode === getCurrentMode()
+        gameMinutes >= 30 &&
+        !anomalyActive &&
+        !dangerActive
     ) {
 
-        cameraImage.src =
-            `anomaly/normal/cam${currentCamera}/${normalAnomalyFile}`;
-
-        return;
+        trySpawnAnomaly();
     }
-
-
-    /*
-        通常画像
-    */
-
-    if (nightVision) {
-
-        cameraImage.src =
-            `images/night/cam${currentCamera}.jpg`;
-
-    } else {
-
-        cameraImage.src =
-            `images/normal/cam${currentCamera}.jpg`;
-
-    }
-
 }
 
 
-/* =========================================================
-   CAMERA UI
-========================================================= */
-
-function updateCameraUI() {
-
-    const number =
-        String(currentCamera).padStart(2, "0");
-
-
-    cameraName.textContent =
-        `CAM ${number}`;
-
-
-    cameraNumber.textContent =
-        number;
-
-
-    if (nightVision) {
-
-        nightIndicator.classList.add("active");
-
-    } else {
-
-        nightIndicator.classList.remove("active");
-
-    }
-
-}
-
-
-/* =========================================================
-   NIGHT VISION
-========================================================= */
+// =========================
+// 夜間モード
+// =========================
 
 function toggleNightVision() {
 
-    if (!gameRunning || gameEnded) {
+    if (!gameStarted) {
         return;
     }
 
@@ -700,926 +479,1104 @@ function toggleNightVision() {
 
 
     if (nightVision) {
-
-        nightOnSound.currentTime = 0;
-
-        nightOnSound.play().catch(() => {});
-
+        playSound("night_on.mp3");
     } else {
-
-        nightOffSound.currentTime = 0;
-
-        nightOffSound.play().catch(() => {});
-
+        playSound("night_off.mp3");
     }
 
 
     updateCameraImage();
-
-    updateCameraUI();
-
 }
 
 
-/* =========================================================
-   CURRENT MODE
-========================================================= */
+// =========================
+// 時刻表示
+// =========================
 
-function getCurrentMode() {
+function updateGameTime() {
 
-    return nightVision
-        ? "night"
-        : "normal";
+    const hours =
+        Math.floor(gameMinutes / 60);
 
+    const minutes =
+        gameMinutes % 60;
+
+
+    gameTime.textContent =
+        `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
 
-/* =========================================================
-   ENVIRONMENT SOUND
-========================================================= */
+// =========================
+// ゲーム時間
+// =========================
 
-function changeEnvironmentSound(camera) {
+function startGameTimer() {
 
-    Object.values(environmentSounds)
-        .forEach(sound => {
+    clearInterval(gameTimer);
 
-            sound.pause();
+    gameMinutes = 0;
 
-            sound.currentTime = 0;
-
-        });
+    updateGameTime();
 
 
-    const sound =
-        environmentSounds[camera];
+    // 2秒 = ゲーム内1分
+    gameTimer = setInterval(() => {
 
-
-    if (!sound) {
-        return;
-    }
-
-
-    sound.currentTime = 0;
-
-    sound.play().catch(() => {});
-
-}
-
-
-/* =========================================================
-   ANOMALY SCHEDULER
-========================================================= */
-
-function scheduleNextAnomaly() {
-
-    if (!gameRunning || gameEnded) {
-        return;
-    }
-
-
-    if (gameMinutes < NO_ANOMALY_UNTIL) {
-        return;
-    }
-
-
-    if (gameMinutes >= GAME_END_MINUTES) {
-        return;
-    }
-
-
-    if (
-        normalAnomalyActive ||
-        dangerAnomalyActive
-    ) {
-        return;
-    }
-
-
-    clearTimeout(nextAnomalyTimer);
-
-
-    /*
-        5〜15秒後
-    */
-
-    const delay =
-        5000 +
-        Math.random() * 10000;
-
-
-    nextAnomalyTimer =
-        setTimeout(
-            createRandomAnomaly,
-            delay
-        );
-
-}
-
-
-/* =========================================================
-   CREATE RANDOM ANOMALY
-========================================================= */
-
-function createRandomAnomaly() {
-
-    if (!gameRunning || gameEnded) {
-        return;
-    }
-
-
-    if (
-        normalAnomalyActive ||
-        dangerAnomalyActive
-    ) {
-        return;
-    }
-
-
-    /*
-        カメラをランダム選択
-    */
-
-    const camera =
-        Math.floor(
-            Math.random() * CAMERA_COUNT
-        ) + 1;
-
-
-    /*
-        20%くらいで危険異変
-
-        必要ならここを変更。
-
-        0.20 = 20%
-        0.10 = 10%
-        0.30 = 30%
-    */
-
-    const isDanger =
-        Math.random() < 0.20;
-
-
-    if (isDanger) {
-
-        const files =
-            dangerAnomalies[camera];
-
-
-        if (
-            files &&
-            files.length > 0
-        ) {
-
-            createDangerAnomaly(
-                camera,
-                randomItem(files)
-            );
-
+        if (!gameStarted) {
             return;
         }
 
-    }
+
+        gameMinutes++;
+
+        updateGameTime();
 
 
-    /*
-        危険異変を選んだが
-        動画が存在しない場合など
-        → 通常異変
-    */
+        // 05:00
+        if (gameMinutes >= 300) {
 
-    createNormalAnomaly(camera);
+            clearGame();
 
+        }
+
+    }, 2000);
 }
 
 
-/* =========================================================
-   CREATE NORMAL ANOMALY
-========================================================= */
+// =========================
+// 異変発生抽選
+// =========================
 
-function createNormalAnomaly(camera) {
+function trySpawnAnomaly() {
 
-    const mode =
-        Math.random() < 0.5
-            ? "normal"
-            : "night";
-
-
-    const files =
-        normalAnomalies[camera]?.[mode];
+    if (anomalyActive || dangerActive) {
+        return;
+    }
 
 
-    if (!files || files.length === 0) {
+    // 通常異変は CAM1 / CAM3 / CAM4
+    const anomalyCameras =
+        [1, 3, 4];
 
-        /*
-            このカメラ・モードに
-            異変画像がない場合は
-            別のカメラを探す
-        */
 
-        scheduleNextAnomaly();
+    const currentMode =
+        nightVision
+            ? "night"
+            : "normal";
+
+
+    // =========================
+    // 通常異変
+    // =========================
+
+    const availableNormal = [];
+
+
+    for (const camera of anomalyCameras) {
+
+        if (!normalAnomalies[camera]) {
+            continue;
+        }
+
+
+        const files =
+            normalAnomalies[camera][currentMode];
+
+
+        if (!files) {
+            continue;
+        }
+
+
+        for (const file of files) {
+
+            const key =
+                `${camera}_${currentMode}_${file}`;
+
+
+            if (!usedNormalAnomalies.has(key)) {
+
+                availableNormal.push({
+
+                    type: "normal",
+
+                    camera: camera,
+
+                    mode: currentMode,
+
+                    file: file,
+
+                    key: key
+
+                });
+            }
+        }
+    }
+
+
+    // =========================
+    // セット異変
+    // =========================
+
+    const availablePaired = [];
+
+
+    for (const camera of anomalyCameras) {
+
+        if (!pairedAnomalies[camera]) {
+            continue;
+        }
+
+
+        for (
+            const anomaly
+            of pairedAnomalies[camera]
+        ) {
+
+            const key =
+                `${camera}_${anomaly.id}`;
+
+
+            if (!usedPairedAnomalies.has(key)) {
+
+                availablePaired.push({
+
+                    type: "paired",
+
+                    camera: camera,
+
+                    id: anomaly.id,
+
+                    normal: anomaly.normal,
+
+                    night: anomaly.night,
+
+                    key: key
+
+                });
+            }
+        }
+    }
+
+
+    // =========================
+    // 危険異変
+    // =========================
+
+    const availableDanger = [];
+
+
+    if (dangerAnomalies[currentCamera]) {
+
+        for (
+            const file
+            of dangerAnomalies[currentCamera]
+        ) {
+
+            const key =
+                `${currentCamera}_${file}`;
+
+
+            if (!usedDangerAnomalies.has(key)) {
+
+                availableDanger.push({
+
+                    camera: currentCamera,
+
+                    file: file,
+
+                    key: key
+
+                });
+            }
+        }
+    }
+
+
+    // =========================
+    // 全部出現済み
+    // =========================
+
+    if (
+        availableNormal.length === 0 &&
+        availablePaired.length === 0 &&
+        availableDanger.length === 0
+    ) {
+
+        console.log(
+            "この時点で出現可能な異変がありません"
+        );
 
         return;
     }
 
 
-    normalAnomalyActive = true;
-
-    normalAnomalyCamera = camera;
-
-    normalAnomalyFile =
-        randomItem(files);
-
-    normalAnomalyMode = mode;
-
-
-    /*
-        現在カメラなら即表示
-    */
+    // =========================
+    // 危険異変 10%
+    // =========================
 
     if (
-        currentCamera === camera &&
-        getCurrentMode() === mode
+        availableDanger.length > 0 &&
+        Math.random() < 0.10
     ) {
 
-        updateCameraImage();
+        spawnDangerAnomaly(
+            availableDanger
+        );
 
-        status.textContent =
-            "異変を検知しています。";
-
+        return;
     }
 
 
-    /*
-        通常異変は20秒間
-    */
+    // =========================
+    // 通常＋セット
+    // =========================
 
-    clearTimeout(normalAnomalyTimer);
+    const availableNormalTypes = [
+        ...availableNormal,
+        ...availablePaired
+    ];
 
-    normalAnomalyTimer =
-        setTimeout(
-            endNormalAnomaly,
-            20000
+
+    if (
+        availableNormalTypes.length > 0
+    ) {
+
+        spawnNormalAnomaly(
+            availableNormalTypes
         );
 
+        return;
+    }
+
+
+    // =========================
+    // 通常系がなくなった場合
+    // =========================
+
+    if (availableDanger.length > 0) {
+
+        spawnDangerAnomaly(
+            availableDanger
+        );
+    }
 }
 
 
-/* =========================================================
-   END NORMAL ANOMALY
-========================================================= */
+// =========================
+// 通常異変・セット異変
+// =========================
 
-function endNormalAnomaly() {
-
-    normalAnomalyActive = false;
-
-    normalAnomalyCamera = null;
-
-    normalAnomalyFile = null;
-
-    normalAnomalyMode = null;
-
-
-    updateCameraImage();
-
-
-    status.textContent =
-        "監視を継続してください。";
-
-
-    scheduleNextAnomaly();
-
-}
-
-
-/* =========================================================
-   CREATE DANGER ANOMALY
-========================================================= */
-
-function createDangerAnomaly(
-    camera,
-    file
+function spawnNormalAnomaly(
+    availableAnomalies
 ) {
 
-    dangerAnomalyActive = true;
-
-    dangerAnomalyCamera = camera;
-
-    dangerAnomalyFile = file;
-
-
-    /*
-        危険異変発生
-
-        現在のカメラに強制切り替え
-    */
-
-    currentCamera = camera;
+    if (
+        !availableAnomalies ||
+        availableAnomalies.length === 0
+    ) {
+        return;
+    }
 
 
-    updateCameraUI();
+    const selected =
+        availableAnomalies[
+            Math.floor(
+                Math.random() *
+                availableAnomalies.length
+            )
+        ];
 
 
-    /*
-        通常画像を隠す
-    */
+    // =========================
+    // 通常異変
+    // =========================
 
-    cameraImage.style.display =
-        "none";
+    if (selected.type === "normal") {
+
+        usedNormalAnomalies.add(
+            selected.key
+        );
 
 
-    /*
-        動画設定
-    */
+        anomalyActive = true;
 
-    dangerVideo.src =
-        `danger/cam${camera}/${file}`;
 
+        currentAnomaly = {
+
+            type: "normal",
+
+            camera: selected.camera,
+
+            mode: selected.mode,
+
+            file: selected.file
+
+        };
+
+
+        console.log(
+            "通常異変発生:",
+            `CAM ${selected.camera}`,
+            selected.mode,
+            selected.file
+        );
+
+
+        updateCameraImage();
+
+        return;
+    }
+
+
+    // =========================
+    // セット異変
+    // =========================
+
+    if (selected.type === "paired") {
+
+        usedPairedAnomalies.add(
+            selected.key
+        );
+
+
+        anomalyActive = true;
+
+
+        currentAnomaly = {
+
+            type: "paired",
+
+            camera: selected.camera,
+
+            normal: selected.normal,
+
+            night: selected.night,
+
+            id: selected.id
+
+        };
+
+
+        console.log(
+            "セット異変発生:",
+            `CAM ${selected.camera}`,
+            `通常=${selected.normal}`,
+            `暗視=${selected.night}`
+        );
+
+
+        updateCameraImage();
+
+    }
+}
+
+
+// =========================
+// 危険異変
+// =========================
+
+function spawnDangerAnomaly(
+    availableDanger
+) {
+
+    if (
+        !availableDanger ||
+        availableDanger.length === 0
+    ) {
+        return;
+    }
+
+
+    const selected =
+        availableDanger[
+            Math.floor(
+                Math.random() *
+                availableDanger.length
+            )
+        ];
+
+
+    const camera =
+        selected.camera;
+
+    const file =
+        selected.file;
+
+    const key =
+        selected.key;
+
+
+    usedDangerAnomalies.add(key);
+
+
+    dangerActive = true;
+
+    dangerCamera = camera;
+
+    dangerFile = file;
+
+    dangerVideoPlaying = false;
+
+
+    console.log(
+        "危険異変発生:",
+        `CAM ${camera}`,
+        file
+    );
+
+
+    // =========================
+    // 動画準備
+    // =========================
+
+    cameraImage.style.display = "none";
+
+    dangerVideo.style.display = "block";
+
+    const path =
+        `anomaly/danger/cam${camera}/${file}`;
+
+
+    // 以前のイベントを解除
+    dangerVideo.onloadeddata = null;
+    dangerVideo.onerror = null;
+
+
+    dangerVideo.src = path;
 
     dangerVideo.currentTime = 0;
 
-    dangerVideo.style.display =
-        "block";
+    dangerVideo.loop = false;
+
+    // 音あり
+    dangerVideo.muted = false;
+
+    // ブラウザ側でインライン再生
+    dangerVideo.setAttribute(
+        "playsinline",
+        ""
+    );
 
 
-    /*
-        危険モード
-    */
+    dangerVideo.load();
+
+
+    // =========================
+    // 動画読み込み完了後に再生
+    // =========================
+
+    dangerVideo.onloadeddata = () => {
+
+        console.log(
+            "動画読み込み完了:",
+            path
+        );
+
+
+        dangerVideo.play()
+            .then(() => {
+
+                dangerVideoPlaying = true;
+
+
+                console.log(
+                    "危険異変動画 再生開始:",
+                    path
+                );
+
+            })
+            .catch(error => {
+
+                console.error(
+                    "危険異変動画の再生に失敗:",
+                    error
+                );
+
+            });
+
+    };
+
+
+    dangerVideo.onerror = () => {
+
+        console.error(
+            "動画ファイルを読み込めません:",
+            path,
+            dangerVideo.error
+        );
+
+    };
+
+
+    startDangerEffects();
+
+    startEnvironmentSound();
+
+
+    clearTimeout(
+        dangerTimer
+    );
+
+
+    dangerTimer =
+        setTimeout(() => {
+
+            if (dangerActive) {
+
+                gameOver();
+
+            }
+
+        }, 10000);
+}
+
+
+// =========================
+// 危険異変演出
+// =========================
+
+function startDangerEffects() {
 
     document.body.classList.add(
         "danger-mode"
     );
 
 
-    status.textContent =
-        "！！！ 危険な異変を検知 ！！！";
+    if (!heartbeatAudio) {
 
+        heartbeatAudio =
+            new Audio(
+                "sounds/heartbeat.mp3"
+            );
 
-    /*
-        心拍開始
-    */
+        heartbeatAudio.loop = true;
 
-    heartbeatSound.currentTime = 0;
+        heartbeatAudio.volume = 0.8;
 
-    heartbeatSound.play().catch(() => {});
+        heartbeatAudio.play()
+            .catch(() => {});
 
-
-    /*
-        動画再生
-    */
-
-    dangerVideo.play().catch(() => {});
-
-
-    /*
-        制限時間
-    */
-
-    clearTimeout(dangerTimeoutTimer);
-
-    dangerTimeoutTimer =
-        setTimeout(
-            dangerTimeOver,
-            DANGER_TIME_LIMIT
-        );
-
-}
-
-
-/* =========================================================
-   DANGER TIME OVER
-========================================================= */
-
-function dangerTimeOver() {
-
-    if (!dangerAnomalyActive) {
-        return;
     }
-
-
-    gameOver();
-
 }
 
 
-/* =========================================================
-   END DANGER ANOMALY
-========================================================= */
+// =========================
+// 危険異変演出停止
+// =========================
 
-function endDangerAnomaly() {
-
-    dangerAnomalyActive = false;
-
-    dangerAnomalyCamera = null;
-
-    dangerAnomalyFile = null;
-
-
-    clearTimeout(dangerTimeoutTimer);
-
-
-    heartbeatSound.pause();
-
-    heartbeatSound.currentTime = 0;
-
-
-    dangerVideo.pause();
-
-    dangerVideo.removeAttribute("src");
-
-    dangerVideo.load();
-
-    dangerVideo.style.display =
-        "none";
-
-
-    cameraImage.style.display =
-        "block";
-
+function stopDangerEffects() {
 
     document.body.classList.remove(
         "danger-mode"
     );
 
 
-    updateCameraImage();
+    if (heartbeatAudio) {
 
+        heartbeatAudio.pause();
 
-    status.textContent =
-        "監視を継続してください。";
+        heartbeatAudio.currentTime = 0;
 
+        heartbeatAudio = null;
 
-    scheduleNextAnomaly();
-
+    }
 }
 
 
-/* =========================================================
-   VIDEO ENDED
-========================================================= */
+// =========================
+// REPORT 長押し
+// =========================
 
-dangerVideo.addEventListener(
-    "ended",
-    () => {
+function startReportHold() {
 
-        /*
-            動画が終わっただけでは
-            危険異変を解除しない。
-
-            プレイヤーが報告するまで
-            危険状態を維持する。
-        */
-
-        dangerVideo.currentTime =
-            dangerVideo.duration;
-
-    }
-);
-
-
-/* =========================================================
-   REPORT
-========================================================= */
-
-function startReport() {
-
-    if (!gameRunning || gameEnded) {
+    if (!gameStarted) {
         return;
     }
 
 
-    if (reportHolding) {
+    if (holdTimer) {
         return;
     }
 
 
-    reportHolding = true;
-
-
-    reportButton.classList.add(
-        "holding"
+    playSound(
+        "hold_start.mp3"
     );
 
 
-    status.textContent =
-        "REPORTING...";
-
-
-    /*
-        長押し開始音
-    */
-
-    holdStartSound.currentTime = 0;
-
-    holdStartSound.play().catch(() => {});
-
-
-    /*
-        ループ音
-    */
-
-    holdLoopAudio.currentTime = 0;
-
-    holdLoopAudio.play().catch(() => {});
-
-
-    /*
-        長押し完了
-    */
-
-    reportTimer =
-        setTimeout(
-            reportAnomaly,
-            REPORT_HOLD_TIME
+    const holdLoop =
+        new Audio(
+            "sounds/hold_loop.mp3"
         );
 
+
+    holdLoop.loop = true;
+
+    holdLoop.volume = 0.7;
+
+    holdLoopStarted = true;
+
+
+    holdLoop.play()
+        .catch(() => {});
+
+
+    holdTimer =
+        setTimeout(() => {
+
+            holdLoop.pause();
+
+            holdLoop.currentTime = 0;
+
+            holdTimer = null;
+
+            holdLoopStarted = false;
+
+            reportAnomaly();
+
+        }, 1200);
 }
 
 
-/* =========================================================
-   CANCEL REPORT
-========================================================= */
+function cancelReportHold() {
 
-function cancelReport() {
-
-    if (!reportHolding) {
+    if (!holdTimer) {
         return;
     }
 
 
-    reportHolding = false;
-
-
-    clearTimeout(reportTimer);
-
-
-    holdLoopAudio.pause();
-
-    holdLoopAudio.currentTime = 0;
-
-
-    reportButton.classList.remove(
-        "holding"
+    clearTimeout(
+        holdTimer
     );
 
+    holdTimer = null;
 
-    if (!dangerAnomalyActive) {
-
-        status.textContent =
-            "監視を継続してください。";
-
-    }
-
+    holdLoopStarted = false;
 }
 
 
-/* =========================================================
-   REPORT ANOMALY
-========================================================= */
+// =========================
+// REPORT
+// =========================
 
 function reportAnomaly() {
 
-    reportHolding = false;
+    // =========================
+    // 危険異変
+    // =========================
+
+    if (dangerActive) {
+
+        clearTimeout(
+            dangerTimer
+        );
+
+        dangerTimer = null;
 
 
-    clearTimeout(reportTimer);
+        dangerActive = false;
+
+        dangerCamera = null;
+
+        dangerFile = null;
 
 
-    holdLoopAudio.pause();
+        dangerVideo.pause();
 
-    holdLoopAudio.currentTime = 0;
+        dangerVideo.currentTime = 0;
 
+        dangerVideo.style.display = "none";
 
-    reportButton.classList.remove(
-        "holding"
-    );
-
-
-    /*
-        危険異変
-    */
-
-    if (dangerAnomalyActive) {
-
-        /*
-            現在のカメラに
-            危険異変があるので成功
-        */
-
-        reportSuccessSound.currentTime = 0;
-
-        reportSuccessSound.play()
-            .catch(() => {});
+        dangerVideoPlaying = false;
 
 
-        endDangerAnomaly();
+        stopDangerEffects();
 
-
-        /*
-            誤報回数リセット
-        */
 
         falseReports = 0;
 
         updateFalseReports();
 
 
-        showReportScreen();
+        showReportSuccess();
 
         return;
     }
 
 
-    /*
-        通常異変
-    */
+    // =========================
+    // 通常・セット異変
+    // =========================
 
-    const correct =
-        normalAnomalyActive &&
-        normalAnomalyCamera === currentCamera &&
-        normalAnomalyMode === getCurrentMode();
+    if (
+        anomalyActive &&
+        currentAnomaly &&
+        currentAnomaly.camera === currentCamera
+    ) {
+
+        // 通常異変
+        if (
+            currentAnomaly.type === "normal" &&
+            currentAnomaly.mode !==
+                (
+                    nightVision
+                        ? "night"
+                        : "normal"
+                )
+        ) {
+
+            falseReports++;
+
+            updateFalseReports();
+
+            playSound(
+                "report_failure.mp3"
+            );
 
 
-    if (correct) {
+            if (falseReports >= 5) {
 
-        /*
-            成功
-        */
+                gameOver();
 
-        reportSuccessSound.currentTime = 0;
-
-        reportSuccessSound.play()
-            .catch(() => {});
+                return;
+            }
 
 
-        endNormalAnomaly();
+            showFalseReportMessage();
+
+            return;
+        }
 
 
-        /*
-            誤報回数リセット
-        */
+        // 正解
+        anomalyActive = false;
+
+        currentAnomaly = null;
 
         falseReports = 0;
 
         updateFalseReports();
 
-
-        showReportScreen();
+        showReportSuccess();
 
         return;
     }
 
 
-    /*
-        失敗
-    */
+    // =========================
+    // 誤報
+    // =========================
 
     falseReports++;
 
     updateFalseReports();
 
 
-    reportFailureSound.currentTime = 0;
-
-    reportFailureSound.play()
-        .catch(() => {});
-
-
-    status.textContent =
-        "異変は確認されませんでした。";
+    playSound(
+        "report_failure.mp3"
+    );
 
 
-    /*
-        5回でゲームオーバー
-    */
-
-    if (
-        falseReports >= MAX_FALSE_REPORTS
-    ) {
+    if (falseReports >= 5) {
 
         gameOver();
 
+        return;
     }
 
+
+    showFalseReportMessage();
 }
 
 
-/* =========================================================
-   FALSE REPORT DISPLAY
-========================================================= */
+// =========================
+// 正しいREPORT
+// =========================
 
-function updateFalseReports() {
-
-    falseReportsDisplay.textContent =
-        `${falseReports}/${MAX_FALSE_REPORTS}`;
-
-}
-
-
-/* =========================================================
-   REPORT SCREEN
-========================================================= */
-
-function showReportScreen() {
+function showReportSuccess() {
 
     reportScreen.classList.add(
         "active"
     );
 
 
-    clearTimeout(reportScreenTimer);
-
-
-    reportScreenTimer =
-        setTimeout(
-            () => {
-
-                reportScreen.classList.remove(
-                    "active"
-                );
-
-            },
-            REPORT_SCREEN_TIME
-        );
-
-}
-
-
-/* =========================================================
-   GAME OVER
-========================================================= */
-
-function gameOver() {
-
-    if (gameEnded) {
-        return;
-    }
-
-
-    gameEnded = true;
-
-    gameRunning = false;
-
-
-    /*
-        タイマー停止
-    */
-
-    clearInterval(gameClockTimer);
-
-    clearTimeout(nextAnomalyTimer);
-
-    clearTimeout(normalAnomalyTimer);
-
-    clearTimeout(dangerTimeoutTimer);
-
-
-    /*
-        報告停止
-    */
-
-    cancelReport();
-
-
-    /*
-        心拍停止
-    */
-
-    heartbeatSound.pause();
-
-    heartbeatSound.currentTime = 0;
-
-
-    /*
-        動画停止
-    */
-
-    dangerVideo.pause();
-
-
-    /*
-        危険状態解除
-    */
-
-    document.body.classList.remove(
-        "danger-mode"
+    playSound(
+        "report_success.mp3"
     );
 
 
-    /*
-        環境音停止
-    */
+    setTimeout(() => {
 
-    Object.values(environmentSounds)
-        .forEach(sound => {
-
-            sound.pause();
-
-            sound.currentTime = 0;
-
-        });
+        reportScreen.classList.remove(
+            "active"
+        );
 
 
-    /*
-        画面
-    */
+        updateCameraImage();
+
+    }, 2000);
+}
+
+
+// =========================
+// 誤報告メッセージ
+// =========================
+
+function showFalseReportMessage() {
+
+    const message =
+        document.createElement("div");
+
+
+    message.id =
+        "falseReportMessage";
+
+
+    message.textContent =
+        "異常はありませんでした";
+
+
+    message.style.position = "fixed";
+
+    message.style.left = "50%";
+
+    message.style.top = "50%";
+
+    message.style.transform =
+        "translate(-50%, -50%)";
+
+    message.style.zIndex = "9999";
+
+    message.style.color = "white";
+
+    message.style.fontSize = "28px";
+
+    message.style.fontWeight = "bold";
+
+    message.style.textShadow =
+        "0 0 10px black";
+
+    message.style.pointerEvents =
+        "none";
+
+
+    document.body.appendChild(
+        message
+    );
+
+
+    setTimeout(() => {
+
+        message.remove();
+
+    }, 1500);
+}
+
+
+// =========================
+// 誤報表示
+// =========================
+
+function updateFalseReports() {
+
+    falseReportsDisplay.textContent =
+        `${falseReports}/5`;
+}
+
+
+// =========================
+// ゲームオーバー
+// =========================
+
+function gameOver() {
+
+    gameStarted = false;
+
+
+    clearInterval(gameTimer);
+
+    clearTimeout(dangerTimer);
+
+
+    dangerTimer = null;
+
+
+    dangerActive = false;
+
+    dangerCamera = null;
+
+    dangerFile = null;
+
+    dangerVideoPlaying = false;
+
+
+    anomalyActive = false;
+
+    currentAnomaly = null;
+
+
+    stopEnvironmentSound();
+
+    stopDangerEffects();
+
+
+    if (dangerVideo) {
+
+        dangerVideo.pause();
+
+        dangerVideo.currentTime = 0;
+
+        dangerVideo.style.display = "none";
+
+    }
+
+
+    reportScreen.classList.remove(
+        "active"
+    );
+
 
     gameScreen.classList.remove(
         "active"
     );
 
-    reportScreen.classList.remove(
-        "active"
-    );
 
     gameOverScreen.classList.add(
         "active"
     );
-
 }
 
 
-/* =========================================================
-   GAME CLEAR
-========================================================= */
+// =========================
+// クリア
+// =========================
 
-function gameClear() {
+function clearGame() {
 
-    if (gameEnded) {
-        return;
+    gameStarted = false;
+
+
+    clearInterval(gameTimer);
+
+    clearTimeout(dangerTimer);
+
+
+    dangerTimer = null;
+
+
+    anomalyActive = false;
+
+    currentAnomaly = null;
+
+
+    dangerActive = false;
+
+    dangerCamera = null;
+
+    dangerFile = null;
+
+    dangerVideoPlaying = false;
+
+
+    stopEnvironmentSound();
+
+    stopDangerEffects();
+
+
+    if (dangerVideo) {
+
+        dangerVideo.pause();
+
+        dangerVideo.currentTime = 0;
+
+        dangerVideo.style.display = "none";
+
     }
-
-
-    gameEnded = true;
-
-    gameRunning = false;
-
-
-    /*
-        タイマー停止
-    */
-
-    clearInterval(gameClockTimer);
-
-    clearTimeout(nextAnomalyTimer);
-
-    clearTimeout(normalAnomalyTimer);
-
-    clearTimeout(dangerTimeoutTimer);
-
-
-    /*
-        心拍停止
-    */
-
-    heartbeatSound.pause();
-
-    heartbeatSound.currentTime = 0;
-
-
-    /*
-        動画停止
-    */
-
-    dangerVideo.pause();
-
-
-    /*
-        環境音停止
-    */
-
-    Object.values(environmentSounds)
-        .forEach(sound => {
-
-            sound.pause();
-
-            sound.currentTime = 0;
-
-        });
-
-
-    document.body.classList.remove(
-        "danger-mode"
-    );
 
 
     gameScreen.classList.remove(
         "active"
     );
 
-    reportScreen.classList.remove(
-        "active"
-    );
 
     clearScreen.classList.add(
         "active"
     );
-
 }
 
 
-/* =========================================================
-   BUTTON EVENTS
-========================================================= */
+// =========================
+// ゲーム開始
+// =========================
+
+function startGame() {
+
+    gameStarted = true;
+
+
+    currentCamera = 1;
+
+    nightVision = false;
+
+    falseReports = 0;
+
+
+    anomalyActive = false;
+
+    currentAnomaly = null;
+
+
+    dangerActive = false;
+
+    dangerCamera = null;
+
+    dangerFile = null;
+
+    dangerVideoPlaying = false;
+
+
+    usedNormalAnomalies.clear();
+
+    usedPairedAnomalies.clear();
+
+    usedDangerAnomalies.clear();
+
+
+    updateFalseReports();
+
+    updateGameTime();
+
+    updateCameraImage();
+
+
+    startEnvironmentSound();
+
+    startGameTimer();
+
+
+    startScreen.classList.remove(
+        "active"
+    );
+
+    gameOverScreen.classList.remove(
+        "active"
+    );
+
+    clearScreen.classList.remove(
+        "active"
+    );
+
+    gameScreen.classList.add(
+        "active"
+    );
+}
+
+
+// =========================
+// イベント
+// =========================
 
 startButton.addEventListener(
     "click",
@@ -1635,67 +1592,65 @@ retryButton.addEventListener(
 
 clearButton.addEventListener(
     "click",
-    startGame
-);
-
-
-/* =========================================================
-   CAMERA BUTTONS
-========================================================= */
-
-prevCameraButton.addEventListener(
-    "click",
     () => {
 
-        changeCamera(-1);
+        startScreen.classList.add(
+            "active"
+        );
+
+        clearScreen.classList.remove(
+            "active"
+        );
 
     }
 );
 
 
-nextCameraButton.addEventListener(
+// =========================
+// カメラボタン
+// =========================
+
+previousButton.addEventListener(
     "click",
-    () => {
-
-        changeCamera(1);
-
-    }
+    () => changeCamera(-1)
 );
 
 
-/* =========================================================
-   REPORT BUTTON
-========================================================= */
+nextButton.addEventListener(
+    "click",
+    () => changeCamera(1)
+);
+
+
+// =========================
+// REPORT
+// =========================
 
 reportButton.addEventListener(
     "mousedown",
-    startReport
+    startReportHold
 );
 
 
 reportButton.addEventListener(
     "mouseup",
-    cancelReport
+    cancelReportHold
 );
 
 
 reportButton.addEventListener(
     "mouseleave",
-    cancelReport
+    cancelReportHold
 );
 
 
-/*
-    タッチ端末対応
-*/
-
 reportButton.addEventListener(
     "touchstart",
-    event => {
+    (e) => {
 
-        event.preventDefault();
+        e.preventDefault();
 
-        startReport();
+        startReportHold();
 
     }
 );
@@ -1703,89 +1658,60 @@ reportButton.addEventListener(
 
 reportButton.addEventListener(
     "touchend",
-    event => {
+    (e) => {
 
-        event.preventDefault();
+        e.preventDefault();
 
-        cancelReport();
+        cancelReportHold();
 
     }
 );
 
 
-/* =========================================================
-   KEYBOARD
-========================================================= */
+// =========================
+// キーボード
+// =========================
 
 document.addEventListener(
     "keydown",
-    event => {
+    (e) => {
 
-        /*
-            長押し報告
-        */
-
-        if (
-            event.key === " "
-            ||
-            event.key === "Enter"
-        ) {
-
-            if (
-                gameRunning &&
-                !event.repeat
-            ) {
-
-                startReport();
-
-            }
-
+        if (!gameStarted) {
+            return;
         }
 
 
-        /*
-            A / 左
-        */
-
+        // A / ←
         if (
-            event.key.toLowerCase() === "a"
-            ||
-            event.key === "ArrowLeft"
+            e.key === "a" ||
+            e.key === "A" ||
+            e.key === "ArrowLeft"
         ) {
-
-            event.preventDefault();
 
             changeCamera(-1);
 
         }
 
 
-        /*
-            D / 右
-        */
-
+        // D / →
         if (
-            event.key.toLowerCase() === "d"
-            ||
-            event.key === "ArrowRight"
+            e.key === "d" ||
+            e.key === "D" ||
+            e.key === "ArrowRight"
         ) {
-
-            event.preventDefault();
 
             changeCamera(1);
 
         }
 
 
-        /*
-            W
-        */
-
+        // W
         if (
-            event.key.toLowerCase() === "w"
+            e.key === "w" ||
+            e.key === "W"
         ) {
 
-            if (!event.repeat) {
+            if (!e.repeat) {
 
                 toggleNightVision();
 
@@ -1793,25 +1719,18 @@ document.addEventListener(
 
         }
 
-    }
-);
 
-
-/* =========================================================
-   KEYBOARD REPORT RELEASE
-========================================================= */
-
-document.addEventListener(
-    "keyup",
-    event => {
-
+        // SPACE / ENTER
         if (
-            event.key === " "
-            ||
-            event.key === "Enter"
+            e.key === " " ||
+            e.key === "Enter"
         ) {
 
-            cancelReport();
+            if (!e.repeat) {
+
+                startReportHold();
+
+            }
 
         }
 
@@ -1819,14 +1738,18 @@ document.addEventListener(
 );
 
 
-/* =========================================================
-   INITIAL STATE
-========================================================= */
+document.addEventListener(
+    "keyup",
+    (e) => {
 
-updateCameraImage();
+        if (
+            e.key === " " ||
+            e.key === "Enter"
+        ) {
 
-updateCameraUI();
+            cancelReportHold();
 
-updateFalseReports();
+        }
 
-updateGameTime();
+    }
+);
