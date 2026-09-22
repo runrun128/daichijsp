@@ -6,13 +6,17 @@ html,
 body {
     margin: 0;
     padding: 0;
+
     width: 100%;
     height: 100%;
 
     background: #050505;
     color: #ddd;
 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
     overflow: hidden;
 }
@@ -24,6 +28,7 @@ body {
 
 .screen {
     position: fixed;
+
     inset: 0;
 
     width: 100vw;
@@ -54,9 +59,15 @@ body {
 }
 
 .logo {
-    font-size: clamp(60px, 10vw, 110px);
+    font-size:
+        clamp(
+            60px,
+            10vw,
+            110px
+        );
 
     font-weight: 900;
+
     letter-spacing: 12px;
 
     color: #ddd;
@@ -66,6 +77,7 @@ body {
     margin-top: 5px;
 
     font-size: 12px;
+
     letter-spacing: 4px;
 
     color: #777;
@@ -75,6 +87,7 @@ body {
     margin-top: 55px;
 
     font-size: 11px;
+
     letter-spacing: 3px;
 
     color: #666;
@@ -110,6 +123,7 @@ button {
 
 button:hover {
     background: #222;
+
     border-color: #aaa;
 }
 
@@ -151,18 +165,21 @@ button:active {
 header {
     position: relative;
 
-    flex: 0 0 60px;
+    flex:
+        0 0 60px;
 
     width: 100%;
 
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
     padding: 0 24px;
 
-    border-bottom: 1px solid #222;
+    border-bottom:
+        1px solid #222;
 
     background: #090909;
 
@@ -205,7 +222,11 @@ header {
     left: 50%;
     top: 50%;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
 
     font-size: 20px;
 
@@ -247,7 +268,11 @@ main {
 #cameraContainer {
     position: relative;
 
-    width: min(90vw, 1100px);
+    width:
+        min(
+            90vw,
+            1100px
+        );
 
     aspect-ratio: 16 / 9;
 
@@ -255,7 +280,8 @@ main {
 
     overflow: hidden;
 
-    border: 1px solid #333;
+    border:
+        1px solid #333;
 
     flex-shrink: 1;
 }
@@ -307,9 +333,16 @@ main {
     top: 15px;
     left: 18px;
 
-    padding: 5px 8px;
+    padding:
+        5px 8px;
 
-    background: rgba(0, 0, 0, 0.55);
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.55
+        );
 
     color: #ddd;
 
@@ -326,9 +359,16 @@ main {
     top: 15px;
     right: 18px;
 
-    padding: 5px 8px;
+    padding:
+        5px 8px;
 
-    background: rgba(0, 0, 0, 0.55);
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.55
+        );
 
     color: #777;
 
@@ -364,8 +404,18 @@ main {
     background:
         repeating-linear-gradient(
             to bottom,
-            rgba(255, 255, 255, 0.025) 0px,
-            rgba(255, 255, 255, 0.025) 1px,
+            rgba(
+                255,
+                255,
+                255,
+                0.025
+            ) 0px,
+            rgba(
+                255,
+                255,
+                255,
+                0.025
+            ) 1px,
             transparent 1px,
             transparent 4px
         );
@@ -377,7 +427,11 @@ main {
 ======================================== */
 
 #status {
-    width: min(90vw, 1100px);
+    width:
+        min(
+            90vw,
+            1100px
+        );
 
     height: 38px;
 
@@ -404,7 +458,11 @@ main {
 ======================================== */
 
 .controls {
-    width: min(90vw, 1100px);
+    width:
+        min(
+            90vw,
+            1100px
+        );
 
     height: 55px;
 
@@ -424,7 +482,21 @@ main {
 }
 
 .report-button {
-    min-width: 180px !important;
+    min-width:
+        180px !important;
+}
+
+.night-button {
+    min-width:
+        160px !important;
+}
+
+.night-button.active {
+    background: #222;
+
+    border-color: #aaa;
+
+    color: #fff;
 }
 
 .report-button.holding {
@@ -439,7 +511,11 @@ main {
 ======================================== */
 
 .help {
-    width: min(90vw, 1100px);
+    width:
+        min(
+            90vw,
+            1100px
+        );
 
     height: 35px;
 
@@ -458,6 +534,8 @@ main {
     letter-spacing: 1px;
 
     flex-shrink: 0;
+
+    white-space: nowrap;
 }
 
 
@@ -496,10 +574,12 @@ main {
 
     letter-spacing: 3px;
 
-    animation: reportFade 0.4s ease;
+    animation:
+        reportFade 0.4s ease;
 }
 
 @keyframes reportFade {
+
     from {
         opacity: 0;
     }
@@ -507,6 +587,7 @@ main {
     to {
         opacity: 1;
     }
+
 }
 
 
@@ -528,7 +609,12 @@ main {
 }
 
 .result-title {
-    font-size: clamp(50px, 8vw, 90px);
+    font-size:
+        clamp(
+            50px,
+            8vw,
+            90px
+        );
 
     font-weight: 900;
 
@@ -557,29 +643,50 @@ main {
 ======================================== */
 
 .danger-mode #cameraContainer {
-    animation: dangerShake 0.12s infinite;
+    animation:
+        dangerShake 0.12s infinite;
 }
 
 @keyframes dangerShake {
 
     0% {
-        transform: translate(0, 0);
+        transform:
+            translate(
+                0,
+                0
+            );
     }
 
     25% {
-        transform: translate(-3px, 2px);
+        transform:
+            translate(
+                -3px,
+                2px
+            );
     }
 
     50% {
-        transform: translate(3px, -2px);
+        transform:
+            translate(
+                3px,
+                -2px
+            );
     }
 
     75% {
-        transform: translate(-2px, -3px);
+        transform:
+            translate(
+                -2px,
+                -3px
+            );
     }
 
     100% {
-        transform: translate(0, 0);
+        transform:
+            translate(
+                0,
+                0
+            );
     }
 
 }
@@ -591,64 +698,170 @@ main {
 
 @media (max-width: 700px) {
 
+    html,
+    body {
+        overflow: hidden;
+    }
+
+
     header {
         flex-basis: 52px;
 
-        padding: 0 10px;
+        height: 52px;
 
-        font-size: 9px;
-    }
-
-    .header-left {
-        gap: 10px;
-    }
-
-    .game-time {
-        font-size: 15px;
-    }
-
-    main {
-        padding-top: 15px;
-    }
-
-    #cameraContainer {
-        width: 94vw;
-    }
-
-    #status {
-        width: 94vw;
-    }
-
-    .controls {
-        width: 94vw;
-
-        gap: 8px;
-    }
-
-    .controls button {
-        min-width: 75px;
-
-        padding: 0 10px;
-    }
-
-    .report-button {
-        min-width: 130px !important;
-    }
-
-    .help {
-        width: 94vw;
+        padding: 0 8px;
 
         font-size: 8px;
     }
 
-    .camera-label {
-        top: 10px;
-        left: 10px;
+
+    .header-left {
+        gap: 8px;
     }
 
+
+    .header-right {
+        font-size: 8px;
+    }
+
+
+    .game-time {
+        font-size: 14px;
+    }
+
+
+    main {
+        width: 100%;
+
+        padding-top: 12px;
+
+        overflow: hidden;
+    }
+
+
+    #cameraContainer {
+        width:
+            calc(
+                100vw - 20px
+            );
+
+        max-width: none;
+
+        aspect-ratio: 16 / 9;
+    }
+
+
+    #status {
+        width:
+            calc(
+                100vw - 20px
+            );
+
+        height: 32px;
+
+        font-size: 10px;
+    }
+
+
+    .controls {
+
+        width:
+            calc(
+                100vw - 20px
+            );
+
+        height: auto;
+
+        display: grid;
+
+        grid-template-columns:
+            1fr
+            1.5fr
+            1.5fr
+            1fr;
+
+        gap: 5px;
+    }
+
+
+    .controls button {
+
+        width: 100%;
+
+        min-width:
+            0 !important;
+
+        height: 48px;
+
+        padding: 0 3px;
+
+        font-size: 9px;
+
+        letter-spacing: 0;
+    }
+
+
+    .night-button {
+        min-width:
+            0 !important;
+    }
+
+
+    .report-button {
+        min-width:
+            0 !important;
+    }
+
+
+    .help {
+
+        width:
+            calc(
+                100vw - 20px
+            );
+
+        height: 30px;
+
+        font-size: 7px;
+
+        white-space: nowrap;
+    }
+
+
+    .camera-label {
+        top: 8px;
+        left: 8px;
+
+        font-size: 10px;
+    }
+
+
     .night-indicator {
-        top: 10px;
-        right: 10px;
+        top: 8px;
+        right: 8px;
+
+        font-size: 9px;
+    }
+
+
+    #massAnomalyWarning {
+
+        width:
+            calc(
+                100vw - 30px
+            );
+
+        top: 15%;
+
+        padding:
+            12px 10px;
+
+        font-size: 16px;
+    }
+
+
+    .report-message {
+        font-size: 15px;
     }
 
 }
@@ -664,21 +877,37 @@ main {
         padding-top: 10px;
     }
 
+
     header {
         flex-basis: 50px;
+
+        height: 50px;
     }
 
+
     #cameraContainer {
-        width: min(85vw, 800px);
+        width:
+            min(
+                85vw,
+                800px
+            );
     }
+
 
     #status {
         height: 30px;
     }
 
+
     .controls {
         height: 45px;
     }
+
+
+    .controls button {
+        height: 42px;
+    }
+
 
     .help {
         height: 25px;
@@ -693,12 +922,14 @@ main {
 
 #reportButton {
     position: relative;
+
     overflow: hidden;
 }
 
 
 #reportButtonText {
     position: relative;
+
     z-index: 2;
 }
 
@@ -710,13 +941,17 @@ main {
     bottom: 0;
 
     width: 0%;
+
     height: 5px;
 
     background: white;
 
-    transition: width 0.03s linear;
+    transition:
+        width 0.03s linear;
 
     z-index: 1;
+
+    pointer-events: none;
 }
 
 
@@ -725,7 +960,8 @@ main {
 ================================= */
 
 #reportButton.holding {
-    transform: scale(0.98);
+    transform:
+        scale(0.98);
 }
 
 
@@ -739,15 +975,24 @@ main {
 ================================= */
 
 #reportButton.danger-report {
-    background: #8b0000 !important;
+    background:
+        #8b0000 !important;
 
-    border-color: red !important;
+    border-color:
+        red !important;
 
-    color: white !important;
+    color:
+        white !important;
 
     box-shadow:
         0 0 10px red,
-        0 0 25px rgba(255, 0, 0, 0.5);
+        0 0 25px
+        rgba(
+            255,
+            0,
+            0,
+            0.5
+        );
 }
 
 
@@ -769,14 +1014,25 @@ main {
     left: 50%;
     top: 15%;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
     z-index: 9999;
 
-    padding: 15px 25px;
+    width: max-content;
+
+    max-width: 90vw;
+
+    padding:
+        15px 25px;
 
     background:
-        rgba(0, 0, 0, 0.9);
+        rgba(
+            0,
+            0,
+            0,
+            0.9
+        );
 
     border:
         2px solid red;
@@ -792,7 +1048,13 @@ main {
     letter-spacing: 1px;
 
     box-shadow:
-        0 0 20px rgba(255, 0, 0, 0.5);
+        0 0 20px
+        rgba(
+            255,
+            0,
+            0,
+            0.5
+        );
 }
 
 
@@ -801,29 +1063,9 @@ main {
 }
 
 
-#massAnomalyTimer {
-
-    display: block;
-
-    margin-top: 8px;
-
-    color: red;
-
-    font-size: 20px;
-
-    font-variant-numeric: tabular-nums;
-
-}
-
-
 /* =================================
    緊急時
 ================================= */
-
-/*
-   以前の「画面チカチカ」用animationが
-   style.cssにある場合は削除してください。
-*/
 
 body.danger-mode {
     /* チカチカなし */

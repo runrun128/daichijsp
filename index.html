@@ -118,7 +118,7 @@
 
                 <img
                     id="cameraImage"
-                    src="anomaly/images/normal/cam1.jpg"
+                    src="images/normal/cam1.jpg"
                     alt="Surveillance Camera"
                 >
 
@@ -177,17 +177,9 @@
                  4個同時異変警告
             ========================== -->
 
-            <div
-                id="massAnomalyWarning"
-            >
+            <div id="massAnomalyWarning">
 
-                <div>
-                    現在、異変が多発しています
-                </div>
-
-                <span id="massAnomalyTimer">
-                    残り 20秒
-                </span>
+                現在、複数の異常が確認されています
 
             </div>
 
@@ -215,6 +207,13 @@
                 </button>
 
 
+                <button
+                    id="nightButton"
+                    class="night-button"
+                >
+                    NIGHT VISION
+                </button>
+
 
                 <button
                     id="reportButton"
@@ -230,7 +229,6 @@
                     ></span>
 
                 </button>
-
 
 
                 <button id="nextCamera">
@@ -250,7 +248,9 @@
 
                 D / →　次のカメラ　　
 
-                W　ナイトビジョン
+                W　ナイトビジョン　　
+
+                SPACE / ENTER　REPORT
 
             </div>
 
