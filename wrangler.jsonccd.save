@@ -2,8 +2,14 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "daichijsp",
   "compatibility_date": "2026-09-21",
+  "observability": {
+    "enabled": true
+  },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "exclude": [
+      ".git/**",
+      ".DS_Store"
+    ]
   }
 }
-
