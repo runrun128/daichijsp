@@ -1,18 +1,36 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>JSP - Surveillance</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-    <!-- START SCREEN -->
-    <div id="startScreen" class="screen active">
+
+    <!-- =========================
+         START SCREEN
+    ========================== -->
+
+    <div
+        id="startScreen"
+        class="screen active"
+    >
 
         <div class="start-content">
 
@@ -37,42 +55,76 @@
     </div>
 
 
-    <!-- GAME SCREEN -->
-    <div id="gameScreen" class="screen">
+    <!-- =========================
+         GAME SCREEN
+    ========================== -->
+
+    <div
+        id="gameScreen"
+        class="screen"
+    >
+
 
         <!-- HEADER -->
+
         <header>
 
             <div class="header-left">
-                <span class="rec">● REC</span>
-                <span id="cameraName">CAM 01</span>
+
+                <span class="rec">
+                    ● REC
+                </span>
+
+                <span id="cameraName">
+                    CAM 01
+                </span>
+
             </div>
 
-            <div class="game-time" id="gameTime">
+
+            <div
+                class="game-time"
+                id="gameTime"
+            >
                 00:00
             </div>
 
+
             <div class="header-right">
+
                 FALSE REPORTS
-                <span id="falseReports">0/5</span>
+
+                <span id="falseReports">
+                    0/5
+                </span>
+
             </div>
 
         </header>
 
 
-        <!-- CAMERA -->
+
+        <!-- =========================
+             CAMERA
+        ========================== -->
+
         <main>
+
 
             <div id="cameraContainer">
 
+
                 <!-- 通常監視画像 -->
+
                 <img
                     id="cameraImage"
-                    src="images/normal/cam1.jpg"
+                    src="anomaly/images/normal/cam1.jpg"
                     alt="Surveillance Camera"
                 >
 
+
                 <!-- 危険異変動画 -->
+
                 <video
                     id="dangerVideo"
                     playsinline
@@ -80,120 +132,220 @@
                 ></video>
 
 
-                <!-- 画面上の情報 -->
+
+                <!-- CAMERA OVERLAY -->
+
                 <div class="camera-overlay">
 
+
                     <div class="camera-label">
-                        CAMERA <span id="cameraNumber">01</span>
+
+                        CAMERA
+
+                        <span id="cameraNumber">
+                            01
+                        </span>
+
                     </div>
+
+
 
                     <div
                         id="nightIndicator"
                         class="night-indicator"
                     >
+
                         NIGHT VISION
+
                     </div>
+
 
                 </div>
 
 
+
                 <!-- スキャンライン -->
+
                 <div class="scanlines"></div>
+
 
             </div>
 
 
-            <!-- STATUS -->
+
+            <!-- =========================
+                 4個同時異変警告
+            ========================== -->
+
+            <div
+                id="massAnomalyWarning"
+            >
+
+                <div>
+                    現在、異変が多発しています
+                </div>
+
+                <span id="massAnomalyTimer">
+                    残り 20秒
+                </span>
+
+            </div>
+
+
+
+            <!-- =========================
+                 STATUS
+            ========================== -->
+
             <div id="status">
                 監視を開始してください
             </div>
 
 
-            <!-- CONTROLS -->
+
+            <!-- =========================
+                 CONTROLS
+            ========================== -->
+
             <div class="controls">
+
 
                 <button id="prevCamera">
                     ← A
                 </button>
 
+
+
                 <button
                     id="reportButton"
                     class="report-button"
                 >
-                    REPORT
+
+                    <span id="reportButtonText">
+                        REPORT
+                    </span>
+
+                    <span
+                        id="reportProgress"
+                    ></span>
+
                 </button>
+
+
 
                 <button id="nextCamera">
                     D →
                 </button>
 
+
             </div>
 
+
+
+            <!-- HELP -->
 
             <div class="help">
-                A / ←　前のカメラ　　D / →　次のカメラ　　W　ナイトビジョン
+
+                A / ←　前のカメラ　　
+
+                D / →　次のカメラ　　
+
+                W　ナイトビジョン
+
             </div>
+
 
         </main>
 
     </div>
 
 
-    <!-- REPORT SCREEN -->
+
+    <!-- =========================
+         REPORT SCREEN
+    ========================== -->
+
     <div id="reportScreen">
 
         <div class="report-message">
+
             異変を報告しています
+
         </div>
 
     </div>
 
 
-    <!-- GAME OVER -->
-    <div id="gameOverScreen" class="screen">
+
+    <!-- =========================
+         GAME OVER
+    ========================== -->
+
+    <div
+        id="gameOverScreen"
+        class="screen"
+    >
 
         <div class="result-content">
+
 
             <div class="result-title">
                 GAME OVER
             </div>
 
+
             <div class="result-subtitle">
                 SURVEILLANCE FAILED
             </div>
+
 
             <button id="retryButton">
                 RETRY
             </button>
 
+
         </div>
 
     </div>
 
 
-    <!-- CLEAR -->
-    <div id="clearScreen" class="screen">
+
+    <!-- =========================
+         CLEAR
+    ========================== -->
+
+    <div
+        id="clearScreen"
+        class="screen"
+    >
 
         <div class="result-content">
+
 
             <div class="result-title">
                 05:00
             </div>
 
+
             <div class="result-subtitle">
                 SURVEILLANCE COMPLETE
             </div>
 
+
             <button id="clearButton">
                 CLEAR
             </button>
+
 
         </div>
 
     </div>
 
 
+
     <script src="script.js"></script>
 
+
 </body>
+
 </html>

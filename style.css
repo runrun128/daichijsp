@@ -685,3 +685,155 @@ main {
     }
 
 }
+
+
+/* =================================
+   REPORT 長押しUI
+================================= */
+
+#reportButton {
+    position: relative;
+    overflow: hidden;
+}
+
+
+#reportButtonText {
+    position: relative;
+    z-index: 2;
+}
+
+
+#reportProgress {
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 0%;
+    height: 5px;
+
+    background: white;
+
+    transition: width 0.03s linear;
+
+    z-index: 1;
+}
+
+
+/* =================================
+   REPORT 長押し中
+================================= */
+
+#reportButton.holding {
+    transform: scale(0.98);
+}
+
+
+#reportButton.holding #reportProgress {
+    opacity: 1;
+}
+
+
+/* =================================
+   緊急REPORT
+================================= */
+
+#reportButton.danger-report {
+    background: #8b0000 !important;
+
+    border-color: red !important;
+
+    color: white !important;
+
+    box-shadow:
+        0 0 10px red,
+        0 0 25px rgba(255, 0, 0, 0.5);
+}
+
+
+#reportButton.danger-report #reportProgress {
+    background: red;
+}
+
+
+/* =================================
+   4個同時発生警告
+================================= */
+
+#massAnomalyWarning {
+
+    display: none;
+
+    position: fixed;
+
+    left: 50%;
+    top: 15%;
+
+    transform: translateX(-50%);
+
+    z-index: 9999;
+
+    padding: 15px 25px;
+
+    background:
+        rgba(0, 0, 0, 0.9);
+
+    border:
+        2px solid red;
+
+    color: white;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    text-align: center;
+
+    letter-spacing: 1px;
+
+    box-shadow:
+        0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+
+#massAnomalyWarning.active {
+    display: block;
+}
+
+
+#massAnomalyTimer {
+
+    display: block;
+
+    margin-top: 8px;
+
+    color: red;
+
+    font-size: 20px;
+
+    font-variant-numeric: tabular-nums;
+
+}
+
+
+/* =================================
+   緊急時
+================================= */
+
+/*
+   以前の「画面チカチカ」用animationが
+   style.cssにある場合は削除してください。
+*/
+
+body.danger-mode {
+    /* チカチカなし */
+}
+
+
+/* =================================
+   REPORT画面
+================================= */
+
+#reportProgress {
+    pointer-events: none;
+}
