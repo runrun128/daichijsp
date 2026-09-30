@@ -167,13 +167,11 @@ const normalAnomalies = {
 
     2: {
         normal: [
-            "01.jpg",
-            "02.jpg",
-            "03.jsp"
+          
         ],
 
         night: [
-            "04.jpg"
+            
         ]
     },
 
@@ -196,33 +194,32 @@ const normalAnomalies = {
 
     5: {
         normal: [
-            "01.jpg",
-            "02.jpg",
-            "03.jsp"
         ],
 
         night: [
-            "04.jpg"
+            "6.jpg"
         ]
     },
 
     6: {
         normal: [
-            "01.jpg"
+           
         ],
 
         night: [
-            "01.jpg"
+            "4.jpg",
+            "8.jpg",
+            "9.jpg"
         ]
     },
 
     7: {
         normal: [
-            "01.jpg"
+        
         ],
 
         night: [
-            "01.jpg"
+            "06.jpg"
         ]
     }
 };
@@ -258,6 +255,15 @@ const pairedAnomalies = {
             normal: "04.jpg",
             night: "09.jpg"
         }
+    ],
+
+    2: [
+        {
+            id: "pair1",
+            normal: "1.jpg",
+            night: "2.jpg"
+        }
+
     ],
 
     3: [
@@ -301,6 +307,79 @@ const pairedAnomalies = {
             normal: "04.jpg",
             night: "07.jpg"
         }
+    ],
+
+    5: [
+        {
+            id: "pair1",
+            normal: "1.jpg",
+            night: ".2jpg"
+        },
+
+        {
+            id: "pair2",
+            normal: "4.jpg",
+            night: "3.jpg"
+        },
+
+        {
+            id: "pair3",
+            normal: "7.jpg",
+            night: "8.jpg"
+        },
+
+        {
+            id: "pair4",
+            normal: "10.jpg",
+            night: "9.jpg"
+        },
+
+        {
+            id: "pair5",
+            normal: "11.jpg",
+            night: "12.jpg"
+        },
+
+        {
+            id: "pair6",
+            normal: "13.jpg",
+            night: "14.jpg"
+        },
+
+    ],
+
+    6: [
+        {
+            id: "pair1",
+            normal: "1.jpg",
+            night: "2.jpg"
+        },
+
+        {
+            id: "pair2",
+            normal: "5.jpg",
+            night: "6.jpg"
+        },
+
+        {
+            id: "pair3",
+            normal: "10.jpg",
+            night: "11.jpg"
+        },
+    ],
+
+    7: [
+        {
+            id: "pair1",
+            normal: "3.jpg",
+            night: "1.jpg"
+        },
+
+        {
+            id: "pair1",
+            normal: "4.jpg",
+            night: "5.jpg"
+        },
     ]
 };
 
@@ -329,15 +408,16 @@ const dangerAnomalies = {
     ],
 
     5: [
-        "01.mp4"
+        
     ],
 
     6: [
-        "01.mp4"
+        "01.mp4",
+        "02.mp4"
     ],
 
     7: [
-        "01.mp4"
+        
     ]
 };
 
@@ -866,7 +946,7 @@ function trySpawnAnomaly() {
 
 
     const anomalyCameras =
-        [1, 3, 4];
+        [1, 2, 3, 4, 5, 6, 7];
 
 
     const currentMode =
